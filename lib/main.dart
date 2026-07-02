@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_tide/presentation/dashboard/dashboard_screen.dart';
+import 'package:task_tide/presentation/main_navigation.dart';
 import 'package:task_tide/providers/activity_provider.dart';
 import 'package:task_tide/providers/app_state_provider.dart';
 import 'package:task_tide/providers/category_provider.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      home: const DashboardScreen(),
+      home: const MainNavigation(),
     );
   }
 }
