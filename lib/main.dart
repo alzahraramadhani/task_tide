@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart'; 
 import 'package:task_tide/presentation/dashboard/dashboard_screen.dart';
 import 'package:task_tide/presentation/main_navigation.dart';
 import 'package:task_tide/providers/activity_provider.dart';
@@ -7,7 +8,14 @@ import 'package:task_tide/providers/app_state_provider.dart';
 import 'package:task_tide/providers/category_provider.dart';
 import 'package:task_tide/providers/task_provider.dart';
 
-void main() {
+// 2. Ubah fungsi main menjadi async
+void main() async {
+  // 3. Pastikan binding Flutter sudah diinisialisasi sebelum menjalankan fungsi async lain
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 4. Inisialisasi data lokal untuk format bahasa Indonesia ('id')
+  await initializeDateFormatting('id', null);
+
   runApp(
     MultiProvider(
       providers: [
@@ -32,7 +40,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-
       home: const MainNavigation(),
     );
   }

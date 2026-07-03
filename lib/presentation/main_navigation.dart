@@ -163,6 +163,7 @@ class _MainNavigationState extends State<MainNavigation> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       // Bottom Navigation Bar Terintegrasi
       bottomNavigationBar: BottomAppBar(
+        
         padding: EdgeInsets.zero,
         height: 65,
         shape: const CircularNotchedRectangle(),

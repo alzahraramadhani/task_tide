@@ -33,41 +33,68 @@ class TaskProvider with ChangeNotifier {
 
     List<TaskModel> temporaryList = maps.map((map) => TaskModel.fromMap(map)).toList();
 
-    // Jalankan sistem kalkulasi ulang skor dinamis secara realtime sebelum diurutkan
-    for (var i = 0; i < temporaryList.length; i++) {
-      if (temporaryList[i].isCompleted) {
-        // Hitung ulang skor terbaru berdasarkan waktu detik ini
-        double newScore = TaskModel.calculatePriorityScore(
-          priorityLevel: temporaryList[i].priorityLevel,
-          deadline: temporaryList[i].deadline,
-        );
+    if (temporaryList.isNotEmpty) {
+      final now = DateTime.now();
 
-        // Update nilai skor terbaru ke database lokal (Hidden Background Process)
+      // Jalankan proses update algoritma skor prioritas di dalam loop
+      for (int i = 0; i < temporaryList.length; i++) {
+        final task = temporaryList[i];
+        int baseScore = 0;
+
+        // Atur bobot dasar sesuai tingkat kesulitan teks murni
+        if (task.priorityLevel == 'High') {
+          baseScore = 3000;
+        } else if (task.priorityLevel == 'Medium') {
+          baseScore = 2000;
+        } else {
+          baseScore = 1000;
+        }
+
+        // Hitung sisa tenggat waktu dalam satuan menit
+        final minutesRemaining = task.deadline.difference(now).inMinutes;
+        int timeUrgencyScore = 0;
+
+        if (minutesRemaining > 0) {
+          // Semakin sedikit sisa menit, pembagian menghasilkan nilai pengali skor yang semakin besar
+          timeUrgencyScore = (999999 / minutesRemaining).round();
+        } else {
+          // Jika sudah melewati deadline, berikan bonus skor penalti keterlambatan tetap
+          timeUrgencyScore = 5000;
+        }
+
+        final finalPriorityScore = baseScore + timeUrgencyScore;
+
+        // Eksekusi pembaruan baris data di SQLite secara berkala
         await db.update(
           'tasks',
-          {'priority_score': newScore},
+          {'priority_score': finalPriorityScore},
           where: 'id = ?',
-          whereArgs: [temporaryList[i].id],
+          whereArgs: [task.id],
         );
 
-        // Ambil ulang data yang sudah di-update skornya, lalu urutkan dari SKOR TERTINGGI (Desc)
-        final List<Map<String, dynamic>> updatedMaps = await db.query(
-            'tasks',
-            orderBy: 'is_completed ASC, priority_score DESC',
-          );
-
-          _tasks = updatedMaps.map((map) => TaskModel.fromMap(map)).toList();
-          _isLoading = false;
-          notifyListeners();
+        // PENTING: db.query ulang dan notifyListeners() TELAH DIHAPUS dari dalam loop ini
+        // agar tidak terjadi infinite rebuild/spam proses I/O database yang membuat card delay.
       }
     }
+
+    // [DIPINDAH KE SINI] Ambil ulang data secara kolektif HANYA SEKALI setelah seluruh proses loop selesai
+    final List<Map<String, dynamic>> updatedMaps = await db.query(
+      'tasks',
+      orderBy: 'is_completed ASC, priority_score DESC',
+    );
+
+    _tasks = updatedMaps.map((map) => TaskModel.fromMap(map)).toList();
+    _isLoading = false;
+
+    // [DIPINDAH KE SINI] Cukup panggil notifyListeners() SEKALI saja di bagian paling akhir
+    notifyListeners();
   }
 
   // 2. Tambah Tugas Baru
   Future<void> addTask(TaskModel task) async {
     final db = await DatabaseHelper.instance.database;
     await db.insert('tasks', task.toMap());
-    await fetchTasks(); // Refresh the task list
+    await fetchTasks(); // Refresh daftar tugas untuk sinkronisasi otomatis
   }
 
   // 3. Mengubah Status Ceklis Tugas (is_completed) via Checkbox UI
@@ -79,10 +106,15 @@ class TaskProvider with ChangeNotifier {
       where: 'id = ?',
       whereArgs: [taskId],
     );
-    await fetchTasks(); // Refresh the task list
+    await fetchTasks(); // Refresh daftar tugas untuk sinkronisasi otomatis
   }
 
-  // 4. Hapus Tugas
+  // 4. Sinkronisasi kompatibilitas pemicu fungsi dari Codingan 1 / Dashboard Lama
+  void toggleTaskStatus(int taskId, bool isCompleted) {
+    toggleTaskCompletion(taskId, isCompleted);
+  }
+
+  // 5. Hapus Tugas
   Future<void> deleteTask(int taskId) async {
     final db = await DatabaseHelper.instance.database;
     await db.delete(
@@ -90,9 +122,6 @@ class TaskProvider with ChangeNotifier {
       where: 'id = ?',
       whereArgs: [taskId],
     );
-    await fetchTasks(); // Refresh the task list
+    await fetchTasks(); // Refresh daftar tugas untuk sinkronisasi otomatis
   }
-
-  void toggleTaskStatus(int i, bool isCompleted) {}
-
 }
