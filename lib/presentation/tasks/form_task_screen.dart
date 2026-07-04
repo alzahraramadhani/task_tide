@@ -98,6 +98,83 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
     }
   }
 
+  // Dialog Konfirmasi Protektif Hapus Kategori langsung dari Dropdown Menu
+  void _showDeleteCategoryDialog(BuildContext context, int categoryId, String categoryName) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Hapus Kategori',
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          'Apakah kamu yakin ingin menghapus kategori "$categoryName"? Kategori hanya bisa dihapus jika tidak memiliki tugas aktif di dalamnya.',
+          style: GoogleFonts.plusJakartaSans(fontSize: 14, color: AppColors.textDark),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: () async {
+              Navigator.pop(dialogContext); // Tutup dialog konfirmasi utama
+              
+              final taskProvider = context.read<TaskProvider>();
+              final categoryProvider = context.read<CategoryProvider>();
+              
+              // Eksekusi fungsi proteksi hapus kategori
+              final success = await categoryProvider.deleteCategory(categoryId);
+              
+              if (mounted) {
+                if (success) {
+                  // Jika sukses dihapus dan kategori yang dihapus sedang terpilih, reset field dropdown
+                  if (_selectedCategoryId == categoryId) {
+                    setState(() {
+                      _selectedCategoryId = null;
+                    });
+                  }
+                  await taskProvider.fetchTasks(); // Sinkronisasi ulang state tugas
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Kategori "$categoryName" berhasil dihapus.')),
+                  );
+                } else {
+                  // Munculkan dialog peringatan jika terdapat relasi tugas aktif
+                  showDialog(
+                    context: context,
+                    builder: (errContext) => AlertDialog(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      title: Text(
+                        'Gagal Menghapus', 
+                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: Colors.red.shade700),
+                      ),
+                      content: Text(
+                        'Kategori ini tidak bisa dihapus karena masih terikat dengan beberapa daftar tugas kuliah aktif.',
+                        style: GoogleFonts.plusJakartaSans(fontSize: 14),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(errContext),
+                          child: Text('Mengerti', style: GoogleFonts.plusJakartaSans(color: AppColors.primaryBlue)),
+                        )
+                      ],
+                    ),
+                  );
+                }
+              }
+            },
+            child: Text('Hapus', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _saveTask() async {
     if (_formKey.currentState!.validate()) {
       if (_selectedCategoryId == null) {
@@ -205,13 +282,33 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                 ),
                 const SizedBox(height: 4),
                 DropdownButtonFormField<int>(
-                  initialValue: _selectedCategoryId,
+                  value: _selectedCategoryId, // Menggunakan parameter properti 'value' yang tepat untuk form dinamis
                   items: categoryProvider.categories.map((category) {
                     return DropdownMenuItem<int>(
                       value: category.id,
-                      child: Text(
-                        category.name,
-                        style: GoogleFonts.plusJakartaSans(fontSize: 15, color: AppColors.textDark, fontWeight: FontWeight.w500),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            category.name,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 15, 
+                              color: AppColors.textDark, 
+                              fontWeight: FontWeight.w500
+                            ),
+                          ),
+                          // Ikon Tempat Sampah untuk Menghapus Kategori Langsung dari Dropdown Item
+                          IconButton(
+                            icon: Icon(LucideIcons.trash2, size: 18, color: Colors.red.shade600),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              // Menutup dropdown menu terlebih dahulu sebelum memicu dialog konfirmasi
+                              Navigator.pop(context);
+                              _showDeleteCategoryDialog(context, category.id!, category.name);
+                            },
+                          ),
+                        ],
                       ),
                     );
                   }).toList(),
@@ -221,6 +318,19 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                     });
                   },
                   decoration: _buildInputDecoration('Pilih kategori kuliah...'),
+                  // Menambahkan kustomisasi tampilan item terpilih agar ikon tempat sampah tidak ikut muncul di field utama dropdown
+                  selectedItemBuilder: (BuildContext context) {
+                    return categoryProvider.categories.map<Widget>((category) {
+                      return Text(
+                        category.name,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 15, 
+                          color: AppColors.textDark, 
+                          fontWeight: FontWeight.w500
+                        ),
+                      );
+                    }).toList();
+                  },
                 ),
                 const SizedBox(height: 20),
 

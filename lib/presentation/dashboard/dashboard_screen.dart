@@ -100,6 +100,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   if (taskProvider.activeTasks.isEmpty) {
                     return _buildEmptyState('Tidak ada tugas aktif harian.');
                   }
+                  
                   return ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -107,7 +108,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     itemBuilder: (context, index) {
                       final task = taskProvider.activeTasks[index];
                       
-                      // Cari objek kategori yang cocok dari DB SQLite secara real-time
                       final matchedCategory = categoryProvider.categories.firstWhere(
                         (cat) => cat.id == task.categoryId,
                         orElse: () => categoryProvider.categories.isNotEmpty 
@@ -115,14 +115,59 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             : throw Exception('Kategori tidak sinkron'),
                       );
 
-                      return TodaysFocusCard(
-                        task: task,
-                        category: matchedCategory, // Kirim kategori dinamis
-                        index: index, // Mengatur rotasi palette warna default secara seimbang
-                        onToggle: () {
-                          // Gunakan fungsi toggleTaskCompletion bawaan task_provider kamu agar sinkron
-                          taskProvider.toggleTaskCompletion(task.id!, task.isCompleted);
+                      return Dismissible(
+                        key: Key('focus_${task.id}'),
+                        direction: DismissDirection.endToStart,
+                        confirmDismiss: (direction) async {
+                          return await showDialog<bool>(
+                            context: context,
+                            builder: (dialogContext) => AlertDialog(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              title: Text('Hapus Tugas', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+                              content: Text('Apakah kamu yakin ingin menghapus tugas "${task.title}"?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(dialogContext, false),
+                                  child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red.shade600,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                  onPressed: () => Navigator.pop(dialogContext, true),
+                                  child: Text('Hapus', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
+                                ),
+                              ],
+                            ),
+                          );
                         },
+                        onDismissed: (direction) async {
+                          await taskProvider.deleteTask(task.id!);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Tugas "${task.title}" berhasil dihapus.')),
+                            );
+                          }
+                        },
+                        background: Container(
+                          margin: const EdgeInsets.only(bottom: 12), // Sesuai margin bawah TodaysFocusCard
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade600,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          alignment: Alignment.centerRight,
+                          child: const Icon(LucideIcons.trash2, color: Colors.white, size: 24),
+                        ),
+                        child: TodaysFocusCard(
+                          task: task,
+                          category: matchedCategory,
+                          index: index,
+                          onToggle: () {
+                            taskProvider.toggleTaskCompletion(task.id!, task.isCompleted);
+                          },
+                        ),
                       );
                     },
                   );

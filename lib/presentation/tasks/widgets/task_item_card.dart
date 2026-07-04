@@ -31,7 +31,7 @@ class TaskItemCard extends StatelessWidget {
     Color textColor;
 
     if (task.isCompleted) {
-      text = "Selesai";
+      text = "Done";
       icon = LucideIcons.checkCircle;
       textColor = AppColors.textSecondary;
     } else if (difference == 0) {
@@ -49,7 +49,7 @@ class TaskItemCard extends StatelessWidget {
     } else {
       text = "Passed due";
       icon = LucideIcons.alertTriangle;
-      textColor = Colors.grey;
+      textColor = const Color(0xFFD32F2F);
     }
 
     return Row(

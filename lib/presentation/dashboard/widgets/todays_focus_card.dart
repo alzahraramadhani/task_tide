@@ -31,7 +31,7 @@ class TodaysFocusCard extends StatelessWidget {
     Color textColor;
 
     if (task.isCompleted) {
-      text = "Selesai";
+      text = "Done";
       icon = LucideIcons.checkCircle;
       textColor = AppColors.textSecondary;
     } else if (difference == 0) {
@@ -49,7 +49,7 @@ class TodaysFocusCard extends StatelessWidget {
     } else {
       text = "Passed due";
       icon = LucideIcons.alertTriangle;
-      textColor = Colors.grey;
+      textColor = const Color(0xFFD32F2F);
     }
 
     return Row(
@@ -116,8 +116,8 @@ class TodaysFocusCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 5,
             spreadRadius: 0,
             offset: const Offset(0, 4),
           )

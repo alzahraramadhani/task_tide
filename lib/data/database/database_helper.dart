@@ -32,7 +32,6 @@ class DatabaseHelper {
     await db.execute('PRAGMA foreign_keys = ON');
   }
 
-
   Future _createDB(Database db, int version) async {
     // 1. Tabel Kategori Tugas
     await db.execute('''
@@ -53,18 +52,19 @@ class DatabaseHelper {
     ''');
 
     // 3. Tabel Utama Tugas Kuliah
+    // category_id diubah menjadi NULLABLE agar jika kategori dihapus, tugas yang sudah selesai tidak rusak.
     await db.execute('''
       CREATE TABLE tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
-        category_id INTEGER NOT NULL,
+        category_id INTEGER,
         difficulty_level TEXT NOT NULL,
         priority_score REAL DEFAULT 0.0,
         deadline TEXT NOT NULL,
         notes TEXT,
         is_completed INTEGER DEFAULT 0,
         created_at TEXT DEFAULT (datetime('now', 'localtime')),
-        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
+        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
       )
     ''');
 
@@ -89,5 +89,39 @@ class DatabaseHelper {
   Future close() async {
     final db = await instance.database;
     db.close();
+  }
+
+  // ==========================================
+  // FUNGSI OPERASI DATA HAPUS (DELETE CRUD)
+  // ==========================================
+
+  // 1. Fungsi Hapus Tugas Murni
+  Future<int> deleteTask(int id) async {
+    final db = await instance.database; // Menggunakan instance.database yang benar
+    return await db.delete(
+      'tasks',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // 2. Fungsi Hapus Kategori Murni
+  Future<int> deleteCategory(int id) async {
+    final db = await instance.database; // Menggunakan instance.database yang benar
+    
+    // Alur Pengaman: Mengubah sisa tugas (tugas yang sudah berstatus selesai) 
+    // menjadi null pada kolom category_id agar tidak melanggar foreign key constraint.
+    await db.update(
+      'tasks',
+      {'category_id': null},
+      where: 'category_id = ?',
+      whereArgs: [id],
+    );
+
+    return await db.delete(
+      'categories',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

@@ -14,7 +14,7 @@ class AppColors {
   static const List<Color> pastelPalette = [
     Color(0xFFFFF3E0), // Hijau Pastel (Kuliah/Tugas)
     Color(0xEDE9FEE9), // Ungu Pastel (Praktikum)
-    Color(0xFFEDD5E1), // Oranye Pastel (Organisasi)
+    Color(0xFFEDD5E1), // Oranye Pastel (Organisasi) 
     Color(0xFFE1F5FE), // Biru Muda Pastel (Project)
     Color(0xFFFCE4EC), // Pink Pastel (Hobi)
     Color(0xFFFFFDE7), // Kuning Pastel (Umum)

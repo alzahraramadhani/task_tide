@@ -41,6 +41,73 @@ class _TasksScreenState extends State<TasksScreen> {
     super.dispose();
   }
 
+  // Dialog Konfirmasi Hapus Kategori (Protektif)
+  void _showDeleteCategoryDialog(BuildContext context, int categoryId, String categoryName) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Hapus Kategori',
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          'Apakah kamu yakin ingin menghapus kategori "$categoryName"? Kategori hanya bisa dihapus jika tidak memiliki tugas aktif.',
+          style: GoogleFonts.plusJakartaSans(fontSize: 14, color: AppColors.textDark),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              final taskProvider = context.read<TaskProvider>();
+              // Panggil fungsi proteksi bawaan dari CategoryProvider
+              final success = await context.read<CategoryProvider>().deleteCategory(categoryId);
+              
+              if (mounted) {
+                if (success) {
+                  // Jika sukses, kembalikan filter tab ke 'All' dan refresh tugas
+                  setState(() => _selectedCategoryId = null);
+                  await taskProvider.fetchTasks();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Kategori "$categoryName" berhasil dihapus.')),
+                  );
+                } else {
+                  // Jika gagal karena ada tugas aktif terikat
+                  showDialog(
+                    context: context,
+                    builder: (errContext) => AlertDialog(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      title: Text('Gagal Menghapus', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: Colors.red.shade700)),
+                      content: Text(
+                        'Kategori tidak bisa dihapus karena masih terdapat tugas kuliah aktif di dalamnya.',
+                        style: GoogleFonts.plusJakartaSans(fontSize: 14),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(errContext),
+                          child: Text('Mengerti', style: GoogleFonts.plusJakartaSans(color: AppColors.primaryBlue)),
+                        )
+                      ],
+                    ),
+                  );
+                }
+              }
+            },
+            child: Text('Hapus', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,14 +261,61 @@ class _TasksScreenState extends State<TasksScreen> {
                               : throw Exception('Kategori tidak sinkron'),
                         );
 
-                        return TaskItemCard(
-                          task: task,
-                          category: matchedCategory,
-                          index: index,
-                          onToggle: () {
-                            // Eksekusi fungsi toggle completion dari provider bawaanmu
-                            taskProvider.toggleTaskCompletion(task.id!, task.isCompleted);
+                        // Membungkus Kartu dengan Dismissible untuk Fitur Geser Hapus
+                        return Dismissible(
+                          key: Key('task_${task.id}'),
+                          direction: DismissDirection.endToStart,
+                          confirmDismiss: (direction) async {
+                            // Dialog Konfirmasi sebelum benar-benar menghapus data dari SQLite
+                            return await showDialog<bool>(
+                              context: context,
+                              builder: (dialogContext) => AlertDialog(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                title: Text('Hapus Tugas', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+                                content: Text('Apakah kamu yakin ingin menghapus tugas "${task.title}"?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(dialogContext, false),
+                                    child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red.shade600,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    ),
+                                    onPressed: () => Navigator.pop(dialogContext, true),
+                                    child: Text('Hapus', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
+                                  ),
+                                ],
+                              ),
+                            );
                           },
+                          onDismissed: (direction) async {
+                            await taskProvider.deleteTask(task.id!);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Tugas "${task.title}" berhasil dihapus.')),
+                              );
+                            }
+                          },
+                          background: Container(
+                            margin: const EdgeInsets.only(bottom: 15), // Sejajar dengan margin bawah TaskItemCard
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade600,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            alignment: Alignment.centerRight,
+                            child: const Icon(LucideIcons.trash2, color: Colors.white, size: 24),
+                          ),
+                          child: TaskItemCard(
+                            task: task,
+                            category: matchedCategory,
+                            index: index,
+                            onToggle: () {
+                              taskProvider.toggleTaskCompletion(task.id!, task.isCompleted);
+                            },
+                          ),
                         );
                       },
                     );
