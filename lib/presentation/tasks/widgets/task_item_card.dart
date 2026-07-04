@@ -87,6 +87,8 @@ class TaskItemCard extends StatelessWidget {
     if (basePastel == AppColors.pastelPalette[1]) return AppColors.accentPurple;
     if (basePastel == AppColors.pastelPalette[2]) return const Color(0xFF2E7D32);
     if (basePastel == AppColors.pastelPalette[3]) return const Color(0xFF0277BD);
+    if (basePastel == AppColors.pastelPalette[4]) return const Color.fromARGB(255, 189, 2, 152);
+    if (basePastel == AppColors.pastelPalette[5]) return const Color.fromARGB(255, 154, 166, 20);
     return AppColors.primaryBlue;
   }
 
