@@ -45,7 +45,7 @@ class _InlineTypeDialogState extends State<InlineTypeDialog> {
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Text(
-        'Tambah Tipe Agenda',
+        'Add New Type',
         style: GoogleFonts.plusJakartaSans(
           fontSize: 18,
           fontWeight: FontWeight.bold,
@@ -59,7 +59,7 @@ class _InlineTypeDialogState extends State<InlineTypeDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Nama Tipe Baru',
+              'Name of New Type',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -76,7 +76,7 @@ class _InlineTypeDialogState extends State<InlineTypeDialog> {
                 fontWeight: FontWeight.w500,
               ),
               decoration: InputDecoration(
-                hintText: 'Contoh: Kuis, Ujian, Lomba...',
+                hintText: 'Example: Workshop',
                 hintStyle: GoogleFonts.plusJakartaSans(
                   color: AppColors.textSecondary.withValues(alpha: 0.5),
                   fontSize: 14,
@@ -97,7 +97,7 @@ class _InlineTypeDialogState extends State<InlineTypeDialog> {
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Tipe agenda tidak boleh kosong';
+                  return 'Name of new type cannot be empty';
                 }
                 return null;
               },
@@ -109,7 +109,7 @@ class _InlineTypeDialogState extends State<InlineTypeDialog> {
         TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: Text(
-            'Batal',
+            'Cancel',
             style: GoogleFonts.plusJakartaSans(
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w600,
@@ -125,7 +125,7 @@ class _InlineTypeDialogState extends State<InlineTypeDialog> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           child: Text(
-            'Simpan',
+            'Save',
             style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
           ),
         ),

@@ -51,7 +51,7 @@ class _InlineCategoryDialogState extends State<InlineCategoryDialog> {
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Text(
-        'Tambah Kategori Baru',
+        'Add New Category',
         style: GoogleFonts.plusJakartaSans(
           fontSize: 18,
           fontWeight: FontWeight.bold,
@@ -75,7 +75,7 @@ class _InlineCategoryDialogState extends State<InlineCategoryDialog> {
                   fontWeight: FontWeight.w500,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Nama kategori (Contoh: Praktikum)...',
+                  hintText: 'Name of Category',
                   hintStyle: GoogleFonts.plusJakartaSans(
                     color: AppColors.textSecondary.withValues(alpha: 0.5),
                     fontSize: 14,
@@ -92,7 +92,7 @@ class _InlineCategoryDialogState extends State<InlineCategoryDialog> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Nama kategori wajib diisi';
+                    return 'Name of category cannot be empty';
                   }
                   return null;
                 },
@@ -101,7 +101,7 @@ class _InlineCategoryDialogState extends State<InlineCategoryDialog> {
               
               // Label Pilih Warna Pastel
               Text(
-                'Pilih Tag Warna',
+                'Select Color Tag',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -151,7 +151,7 @@ class _InlineCategoryDialogState extends State<InlineCategoryDialog> {
         TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: Text(
-            'Batal',
+            'Cancel',
             style: GoogleFonts.plusJakartaSans(
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w600,
@@ -167,7 +167,7 @@ class _InlineCategoryDialogState extends State<InlineCategoryDialog> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           child: Text(
-            'Simpan',
+            'Save',
             style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
           ),
         ),

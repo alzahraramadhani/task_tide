@@ -79,13 +79,13 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
     if (_formKey.currentState!.validate()) {
       if (_selectedTypeId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pilih tipe agenda terlebih dahulu!')),
+          const SnackBar(content: Text('Select an agenda type first!')),
         );
         return;
       }
       if (_selectedDate == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Tentukan tanggal pelaksanaan agenda!')),
+          const SnackBar(content: Text('Set the agenda date!')),
         );
         return;
       }
@@ -103,7 +103,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Agenda aktivitas berhasil ditambahkan!')),
+          const SnackBar(content: Text('Agenda added successfully!')),
         );
         Navigator.pop(context); // Kembali ke navigasi utama
       }
@@ -124,7 +124,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Tambah Agenda Kegiatan',
+          'New Agenda',
           style: GoogleFonts.plusJakartaSans(
             color: AppColors.textDark,
             fontWeight: FontWeight.bold,
@@ -145,7 +145,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                 // INPUT NAMA AGENDA / KEGIATAN
                 // ==========================================
                 Text(
-                  'Nama Agenda / Kegiatan',
+                  'Name of Agenda / Activity',
                   style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
@@ -156,14 +156,14 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                 TextFormField(
                   controller: _nameController,
                   style: GoogleFonts.plusJakartaSans(
-                    fontSize: 15,
+                    fontSize: 14,
                     color: AppColors.textDark,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
-                  decoration: _buildInputDecoration('Contoh: Kuis Rekayasa Perangkat Lunak...'),
+                  decoration: _buildInputDecoration('Example: UI/UX Workshop'),
                   validator: (value) => (value == null || value.trim().isEmpty) ? 'Nama agenda tidak boleh kosong' : null,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
 
                 // ==========================================
                 // DROPDOWN TIPE AGENDA + INLINE BUTTON TRIGGER
@@ -172,7 +172,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Tipe Agenda',
+                      'Agenda Type',
                       style: GoogleFonts.plusJakartaSans(
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,
@@ -183,7 +183,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                       onPressed: _openInlineTypeDialog,
                       icon: const Icon(LucideIcons.plus, size: 16, color: AppColors.primaryBlue),
                       label: Text(
-                        'Tipe Baru',
+                        'New Type',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
@@ -202,8 +202,8 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                       child: Text(
                         type.name,
                         style: GoogleFonts.plusJakartaSans(
-                          fontSize: 15,
-                          color: AppColors.textDark,
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -214,7 +214,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                       _selectedTypeId = value;
                     });
                   },
-                  decoration: _buildInputDecoration('Pilih tipe agenda kegiatan...'),
+                  decoration: _buildInputDecoration('Select an agenda type...'),
                 ),
                 const SizedBox(height: 20),
 
@@ -222,7 +222,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                 // SELEKTOR TANGGAL KEGIATAN
                 // ==========================================
                 Text(
-                  'Tanggal Pelaksanaan',
+                  'Agenda Date',
                   style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
@@ -245,7 +245,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                       children: [
                         Text(
                           _selectedDate == null
-                              ? 'Pilih tanggal pelaksanaan agenda...'
+                              ? 'Select agenda date...'
                               : DateFormat('EEEE, dd MMMM yyyy', 'id').format(_selectedDate!),
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 15,
@@ -266,7 +266,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                 // INPUT CATATAN / DESKRIPSI AGENDA
                 // ==========================================
                 Text(
-                  'Catatan Khusus (Opsional)',
+                  'Notes (Optional)',
                   style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
@@ -278,11 +278,11 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                   controller: _notesController,
                   maxLines: 3,
                   style: GoogleFonts.plusJakartaSans(
-                    fontSize: 15,
+                    fontSize: 14,
                     color: AppColors.textDark,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
-                  decoration: _buildInputDecoration('Masukkan ruang ujian, materi kuis bab berapa, bawa perlengkapan apa saja...'),
+                  decoration: _buildInputDecoration('Enter exam room, quiz material, required materials...'),
                 ),
                 const SizedBox(height: 32),
 
@@ -299,7 +299,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Simpan Agenda Kegiatan',
+                    'Save Agenda',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
