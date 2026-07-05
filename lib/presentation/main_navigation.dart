@@ -53,12 +53,22 @@ class _MainNavigationState extends State<MainNavigation> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Tambah Agenda Baru',
+                  'Create New',
                   style: GoogleFonts.plusJakartaSans(
-                    fontSize: 16,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  'What would you like to add today?',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    fontWeight: FontWeight.normal,
+                    color: AppColors.textSecondary,
+                  ),
+                  
                 ),
                 const SizedBox(height: 24),
                 Row(
@@ -86,7 +96,7 @@ class _MainNavigationState extends State<MainNavigation> {
                               const Icon(LucideIcons.clipboardList, color: AppColors.primaryBlue, size: 28),
                               const SizedBox(height: 8),
                               Text(
-                                'Tugas Kuliah',
+                                'New Task',
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -122,7 +132,7 @@ class _MainNavigationState extends State<MainNavigation> {
                               const Icon(LucideIcons.calendarDays, color: Colors.orange, size: 28),
                               const SizedBox(height: 8),
                               Text(
-                                'Aktivitas / Kuis',
+                                'New Agenda',
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -162,22 +172,31 @@ class _MainNavigationState extends State<MainNavigation> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       // Bottom Navigation Bar Terintegrasi
-      bottomNavigationBar: BottomAppBar(
-        
-        padding: EdgeInsets.zero,
-        height: 65,
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8.0,
-        color: AppColors.backgroundFab, // Latar belakang FAB
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(0, LucideIcons.layoutDashboard, 'Beranda'),
-            _buildNavItem(1, LucideIcons.checkSquare, 'Tugas'),
-            const SizedBox(width: 40), // Ruang kosong agar FAB di tengah tidak menabrak ikon
-            _buildNavItem(2, LucideIcons.calendarDays, 'Agenda'),
-            _buildNavItem(3, LucideIcons.user, 'Profil'),
-          ],
+      
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          // Mengatur warna bayangan (shadow) agar lebih soft
+          shadowColor: Colors.black.withValues(alpha: 0.10), 
+        ),
+        child: BottomAppBar(
+          padding: EdgeInsets.zero,
+          height: 65,
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 8.0,
+          color: AppColors.backgroundFab, // Latar belakang FAB
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0), // 👈 Memberi jarak kiri-kanan sebesar 16
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(0, LucideIcons.layoutDashboard, 'Home'),
+                _buildNavItem(1, LucideIcons.checkSquare, 'Tasks'),
+                const SizedBox(width: 40), 
+                _buildNavItem(2, LucideIcons.calendarDays, 'Agenda'),
+                _buildNavItem(3, LucideIcons.user, 'Profile'),
+              ],
+            ),
+          ),
         ),
       ),
     );

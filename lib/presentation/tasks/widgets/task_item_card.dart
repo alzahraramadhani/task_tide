@@ -198,7 +198,7 @@ class TaskItemCard extends StatelessWidget {
                       Text(
                         task.title,
                         style: GoogleFonts.plusJakartaSans(
-                          fontSize: 15,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: task.isCompleted ? AppColors.textSecondary : AppColors.textDark,
                           decoration: task.isCompleted ? TextDecoration.lineThrough : null,

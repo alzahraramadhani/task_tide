@@ -135,34 +135,47 @@ class _TasksScreenState extends State<TasksScreen> {
               const SizedBox(height: 16),
 
               // 2. SEARCH BAR (Menyelaraskan gaya _buildInputDecoration)
-              TextField(
-                controller: _searchController,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 15,
-                  color: AppColors.textDark,
-                  fontWeight: FontWeight.w500,
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06), // Warna shadow soft
+                      blurRadius: 10, // Kelembutan bayangan
+                      offset: const Offset(0, 4), // Posisi bayangan (x: kanan/kiri, y: atas/bawah)
+                      spreadRadius: 0, // Penyebaran bayangan
+                    ),
+                  ],
                 ),
-                decoration: InputDecoration(
-                  hintText: 'Search tasks...',
-                  hintStyle: GoogleFonts.plusJakartaSans(
-                    color: AppColors.textSecondary.withValues(alpha: 0.5),
-                    fontSize: 14,
+                child: TextField(
+                  controller: _searchController,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 15,
+                    color: AppColors.textDark,
+                    fontWeight: FontWeight.w500,
                   ),
-                  prefixIcon: const Icon(LucideIcons.search, size: 18, color: AppColors.textSecondary),
-                  fillColor: Colors.white,
-                  filled: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.primaryBlue, width: 2),
+                  decoration: InputDecoration(
+                    hintText: 'Search tasks...',
+                    hintStyle: GoogleFonts.plusJakartaSans(
+                      color: AppColors.textSecondary.withValues(alpha: 0.5),
+                      fontSize: 14,
+                    ),
+                    prefixIcon: const Icon(LucideIcons.search, size: 18, color: AppColors.textSecondary),
+                    fillColor: Colors.white,
+                    filled: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: BorderSide(color: Colors.grey.shade200),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: BorderSide(color: Colors.grey.shade200),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: const BorderSide(color: AppColors.primaryBlue, width: 2),
+                    ),
                   ),
                 ),
               ),

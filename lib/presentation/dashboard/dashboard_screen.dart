@@ -98,7 +98,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Consumer2<TaskProvider, CategoryProvider>(
                 builder: (context, taskProvider, categoryProvider, child) {
                   if (taskProvider.activeTasks.isEmpty) {
-                    return _buildEmptyState('Tidak ada tugas aktif harian.');
+                    return _buildEmptyState('No active daily tasks.');
                   }
                   
                   return ListView.builder(
@@ -112,7 +112,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         (cat) => cat.id == task.categoryId,
                         orElse: () => categoryProvider.categories.isNotEmpty 
                             ? categoryProvider.categories.first 
-                            : throw Exception('Kategori tidak sinkron'),
+                            : throw Exception('Categories out of sync'),
                       );
 
                       return Dismissible(
@@ -123,12 +123,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             context: context,
                             builder: (dialogContext) => AlertDialog(
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              title: Text('Hapus Tugas', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-                              content: Text('Apakah kamu yakin ingin menghapus tugas "${task.title}"?'),
+                              title: Text('Delete Task', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+                              content: Text('Are you sure you want to delete the task "${task.title}"?'),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(dialogContext, false),
-                                  child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
+                                  child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
                                 ),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
@@ -136,7 +136,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                   ),
                                   onPressed: () => Navigator.pop(dialogContext, true),
-                                  child: Text('Hapus', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
+                                  child: Text('Delete', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
                                 ),
                               ],
                             ),
@@ -146,7 +146,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           await taskProvider.deleteTask(task.id!);
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Tugas "${task.title}" berhasil dihapus.')),
+                              SnackBar(content: Text('Task "${task.title}" deleted successfully.')),
                             );
                           }
                         },
@@ -215,7 +215,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   }
                   
                   if (activityProvider.activities.isEmpty) {
-                    return _buildEmptyState('Belum ada aktivitas mendatang.');
+                    return _buildEmptyState('No upcoming activities.');
                   }
 
                   return ListView.builder(

@@ -105,17 +105,17 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Hapus Kategori',
+          'Delete Category',
           style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
         ),
         content: Text(
-          'Apakah kamu yakin ingin menghapus kategori "$categoryName"? Kategori hanya bisa dihapus jika tidak memiliki tugas aktif di dalamnya.',
+          'Are you sure you want to delete the category "$categoryName"? A category can only be deleted if it does not have any active tasks within it.',
           style: GoogleFonts.plusJakartaSans(fontSize: 14, color: AppColors.textDark),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
+            child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -141,7 +141,7 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                   }
                   await taskProvider.fetchTasks(); // Sinkronisasi ulang state tugas
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Kategori "$categoryName" berhasil dihapus.')),
+                    SnackBar(content: Text('Category "$categoryName" deleted successfully.')),
                   );
                 } else {
                   // Munculkan dialog peringatan jika terdapat relasi tugas aktif
@@ -150,17 +150,17 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                     builder: (errContext) => AlertDialog(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       title: Text(
-                        'Gagal Menghapus', 
+                        'Failed to Delete Category', 
                         style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: Colors.red.shade700),
                       ),
                       content: Text(
-                        'Kategori ini tidak bisa dihapus karena masih terikat dengan beberapa daftar tugas kuliah aktif.',
+                        'This category cannot be deleted because it is still associated with several active college task lists.',
                         style: GoogleFonts.plusJakartaSans(fontSize: 14),
                       ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(errContext),
-                          child: Text('Mengerti', style: GoogleFonts.plusJakartaSans(color: AppColors.primaryBlue)),
+                          child: Text('Understood', style: GoogleFonts.plusJakartaSans(color: AppColors.primaryBlue)),
                         )
                       ],
                     ),
@@ -168,7 +168,7 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                 }
               }
             },
-            child: Text('Hapus', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: Text('Delete', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -179,13 +179,13 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
     if (_formKey.currentState!.validate()) {
       if (_selectedCategoryId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pilih kategori tugas terlebih dahulu!')),
+          const SnackBar(content: Text('Please select a task category first!')),
         );
         return;
       }
       if (_selectedDateTime == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Tentukan tenggat waktu (due date) tugas!')),
+          const SnackBar(content: Text('Please set the due date for the task!')),
         );
         return;
       }
@@ -206,7 +206,7 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Tugas baru berhasil ditambahkan!')),
+          const SnackBar(content: Text('New task added successfully!')),
         );
         Navigator.pop(context); // Kembali ke halaman navigasi utama
       }
@@ -227,7 +227,7 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Tambah Tugas Kuliah',
+          'Add Task',
           style: GoogleFonts.plusJakartaSans(
             color: AppColors.textDark,
             fontWeight: FontWeight.bold,
@@ -248,17 +248,17 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                 // INPUT JUDUL TUGAS
                 // ==========================================
                 Text(
-                  'Judul Tugas / Mata Kuliah',
+                  'Task Title / Course Name',
                   style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: AppColors.textDark, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _titleController,
-                  style: GoogleFonts.plusJakartaSans(fontSize: 15, color: AppColors.textDark, fontWeight: FontWeight.w500),
-                  decoration: _buildInputDecoration('Contoh: Analisis Program Sorting C...'),
-                  validator: (value) => (value == null || value.trim().isEmpty) ? 'Judul tugas tidak boleh kosong' : null,
+                  style: GoogleFonts.plusJakartaSans(fontSize: 14, color: AppColors.textDark, fontWeight: FontWeight.w600),
+                  decoration: _buildInputDecoration('Example: Database'),
+                  validator: (value) => (value == null || value.trim().isEmpty) ? 'Task title cannot be empty' : null,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
 
                 // ==========================================
                 // SELEKTOR KATEGORI DINAMIS + INLINE TRIGGER
@@ -267,14 +267,14 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Kategori Tugas',
+                      'Task Category',
                       style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: AppColors.textDark, fontSize: 14),
                     ),
                     TextButton.icon(
                       onPressed: _openInlineCategoryDialog,
                       icon: const Icon(LucideIcons.plus, size: 16, color: AppColors.primaryBlue),
                       label: Text(
-                        'Kategori Baru',
+                        'New Category',
                         style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
                       ),
                     ),
@@ -292,9 +292,9 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                           Text(
                             category.name,
                             style: GoogleFonts.plusJakartaSans(
-                              fontSize: 15, 
+                              fontSize: 14, 
                               color: AppColors.textDark, 
-                              fontWeight: FontWeight.w500
+                              fontWeight: FontWeight.w600
                             ),
                           ),
                           // Ikon Tempat Sampah untuk Menghapus Kategori Langsung dari Dropdown Item
@@ -317,7 +317,12 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                       _selectedCategoryId = value;
                     });
                   },
-                  decoration: _buildInputDecoration('Pilih kategori kuliah...'),
+                  style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14, 
+                              color: AppColors.textDark, 
+                              fontWeight: FontWeight.w500
+                            ),
+                  decoration: _buildInputDecoration('Select category...'),
                   // Menambahkan kustomisasi tampilan item terpilih agar ikon tempat sampah tidak ikut muncul di field utama dropdown
                   selectedItemBuilder: (BuildContext context) {
                     return categoryProvider.categories.map<Widget>((category) {
@@ -338,7 +343,7 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                 // SELEKTOR DIFFICULTY LEVEL (LOW, MEDIUM, HIGH)
                 // ==========================================
                 Text(
-                  'Tingkat Kesulitan (Bobot)',
+                  'Difficulty Level',
                   style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: AppColors.textDark, fontSize: 14),
                 ),
                 const SizedBox(height: 10),
@@ -383,7 +388,7 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                 // SELEKTOR DEADLINE (DATE & TIME PICKER)
                 // ==========================================
                 Text(
-                  'Batas Pengumpulan (Deadline)',
+                  'Submission Deadline',
                   style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: AppColors.textDark, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
@@ -402,10 +407,10 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                       children: [
                         Text(
                           _selectedDateTime == null
-                              ? 'Pilih tanggal & jam batas waktu...'
+                              ? 'Select date & time...'
                               : DateFormat('EEEE, dd MMMM yyyy - HH:mm', 'id').format(_selectedDateTime!),
                           style: GoogleFonts.plusJakartaSans(
-                            fontSize: 15,
+                            fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: _selectedDateTime == null ? AppColors.textSecondary.withValues(alpha: 0.6) : AppColors.textDark,
                           ),
@@ -421,15 +426,15 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                 // INPUT CATATAN / DETAIL TUGAS
                 // ==========================================
                 Text(
-                  'Catatan Tambahan (Opsional)',
+                  'Additional Notes (Optional)',
                   style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: AppColors.textDark, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _notesController,
                   maxLines: 3,
-                  style: GoogleFonts.plusJakartaSans(fontSize: 15, color: AppColors.textDark, fontWeight: FontWeight.w500),
-                  decoration: _buildInputDecoration('Masukkan detail instruksi tugas, tautan pengumpulan, dsb...'),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 14, color: AppColors.textDark, fontWeight: FontWeight.w600),
+                  decoration: _buildInputDecoration('Enter task instructions, submission links, etc...'),
                 ),
                 const SizedBox(height: 32),
 
@@ -446,7 +451,7 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Simpan Tugas Kuliah',
+                    'Save Task',
                     style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
