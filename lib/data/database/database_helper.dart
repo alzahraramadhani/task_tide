@@ -72,13 +72,11 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE activities (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        activity_type_id INTEGER NOT NULL,
-        activity_date TEXT NOT NULL,
+        name TEXT,
+        activity_type_id INTEGER,
+        activity_date TEXT, -- Pastikan ini menggunakan underscore (_) bukan camelCase
         notes TEXT,
-        is_completed INTEGER DEFAULT 0,
-        created_at TEXT DEFAULT (datetime('now', 'localtime')),
-        FOREIGN KEY (activity_type_id) REFERENCES activity_types(id) ON DELETE RESTRICT
+        is_completed INTEGER
       )
     ''');
 

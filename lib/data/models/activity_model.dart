@@ -21,12 +21,12 @@ class ActivityModel {
   // Mengubah objek Dart menjadi Map untuk disimpan ke SQLite
   Map<String, dynamic> toMap() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
       'activity_type_id': activityTypeId,
-      'activityDate': activityDate.toIso8601String(),
+      'activity_date': activityDate.toIso8601String(), // Ubah dari 'activityDate' menjadi 'activity_date'
       'notes': notes,
-      'is_completed': isCompleted ? 1 : 0, // Konversi bool ke int (0 atau 1)
+      'is_completed': isCompleted ? 1 : 0,
     };
   }
 
