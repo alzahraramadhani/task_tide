@@ -192,7 +192,7 @@ class _MainNavigationState extends State<MainNavigation> {
                 _buildNavItem(0, LucideIcons.layoutDashboard, 'Home'),
                 _buildNavItem(1, LucideIcons.checkSquare, 'Tasks'),
                 const SizedBox(width: 40), 
-                _buildNavItem(2, LucideIcons.calendarDays, 'Agenda'),
+                _buildNavItem(2, LucideIcons.calendarDays, 'Activity'),
                 _buildNavItem(3, LucideIcons.user, 'Profile'),
               ],
             ),

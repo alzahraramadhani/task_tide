@@ -54,28 +54,12 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       // Avatar Lingkaran dengan Inisial Nama
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: AppColors.progressBackground,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.primaryBlue.withOpacity(0.1),
-                            width: 4,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'AZ',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primaryBlue,
-                            ),
-                          ),
-                        ),
+                      const CircleAvatar(
+                        radius: 40,
+                        backgroundColor: AppColors.iconBackground,
+                        child: Icon(Icons.person, color: Color.fromARGB(255, 87, 94, 107), size: 45),
                       ),
+
                       const SizedBox(height: 16),
                       
                       // Nama Lengkap Pengguna

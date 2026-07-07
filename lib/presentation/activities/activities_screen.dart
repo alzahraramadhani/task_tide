@@ -55,7 +55,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
-                    'Agenda',
+                    'Activity',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -87,7 +87,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     fontWeight: FontWeight.w500,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Search agenda...',
+                    hintText: 'Search Activity...',
                     hintStyle: GoogleFonts.plusJakartaSans(
                       color: AppColors.textSecondary.withOpacity(0.5),
                       fontSize: 14,
@@ -171,7 +171,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     if (filteredActivities.isEmpty) {
                       return Center(
                         child: Text(
-                          'No agenda found.',
+                          'No activity found.',
                           style: GoogleFonts.plusJakartaSans(
                             color: AppColors.textSecondary,
                             fontSize: 14,

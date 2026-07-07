@@ -62,7 +62,7 @@ class _TasksScreenState extends State<TasksScreen> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade600,
+              backgroundColor:  Colors.red.shade400,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: () async {
@@ -293,7 +293,7 @@ class _TasksScreenState extends State<TasksScreen> {
                                   ),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red.shade600,
+                                      backgroundColor: Colors.red.shade400,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                     ),
                                     onPressed: () => Navigator.pop(dialogContext, true),
@@ -315,7 +315,7 @@ class _TasksScreenState extends State<TasksScreen> {
                             margin: const EdgeInsets.only(bottom: 15), // Sejajar dengan margin bawah TaskItemCard
                             padding: const EdgeInsets.symmetric(horizontal: 24),
                             decoration: BoxDecoration(
-                              color: Colors.red.shade600,
+                              color: Colors.red.shade400,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             alignment: Alignment.centerRight,

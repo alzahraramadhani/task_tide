@@ -48,9 +48,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   const CircleAvatar(
                     radius: 22,
-                    backgroundColor: AppColors.progressBackground,
-                    child: Icon(Icons.person, color: AppColors.textSecondary),
+                    backgroundColor: AppColors.iconBackground,
+                    child: Icon(Icons.person, color: Color.fromARGB(255, 87, 94, 107)),
                   ),
+                    
                   Text(
                     'TaskTide',
                     style: GoogleFonts.plusJakartaSans(
@@ -134,7 +135,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red.shade600,
+                                    backgroundColor: Colors.red.shade400,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                   ),
                                   onPressed: () => Navigator.pop(dialogContext, true),
@@ -156,7 +157,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           margin: const EdgeInsets.only(bottom: 12), // Sesuai margin bawah TodaysFocusCard
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           decoration: BoxDecoration(
-                            color: Colors.red.shade600,
+                            color: Colors.red.shade400,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           alignment: Alignment.centerRight,
