@@ -72,7 +72,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   borderRadius: BorderRadius.circular(50),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withOpacity(0.06),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                       spreadRadius: 0,

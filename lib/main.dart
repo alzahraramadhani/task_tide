@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart'; 
-import 'package:task_tide/presentation/dashboard/dashboard_screen.dart';
+import 'package:task_tide/presentation/onboarding/onboarding_screen.dart';
 import 'package:task_tide/presentation/main_navigation.dart';
 import 'package:task_tide/providers/activity_provider.dart';
 import 'package:task_tide/providers/app_state_provider.dart';

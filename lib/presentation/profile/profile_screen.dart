@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:task_tide/providers/app_state_provider.dart';
 import '../../core/constants/colors.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -77,20 +79,25 @@ class ProfileScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       
                       // Nama Lengkap Pengguna
-                      Text(
-                        'Al Zahra Ramadhani',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                      Consumer<AppStateProvider>(
+                      builder: (context, appStateProvider, child) {
+                        final username = appStateProvider.username ?? 'Zahra';
+                        return Text(
+                          '$username',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark,
+                          ),
+                          textAlign: TextAlign.center,
+                        );
+                      },
+                    ),
                       const SizedBox(height: 6),
                       
                       // Institusi/Universitas Asal
                       Text(
-                        'Universitas Negeri Malang',
+                        'Student Productivity Tracker',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -103,8 +110,8 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // 3. SEKSI AKADEMIK & PROGRAM AKTIF
-                _buildSectionTitle('Academic & Programs'),
+                // 3. SEKSI INFORMASI AKUN
+                _buildSectionTitle('Account Information'),
                 const SizedBox(height: 12),
                 Container(
                   decoration: BoxDecoration(
@@ -121,83 +128,33 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       _buildProfileTile(
-                        icon: LucideIcons.graduationCap,
-                        title: 'Almamater Info',
-                        subtitle: 'Universitas Negeri Malang (Size M)',
+                        icon: LucideIcons.bell,
+                        title: 'Notifications',
+                        subtitle: 'Manage reminders and alerts',
                         isLast: false,
+                        // textColor: Colors.green.shade700,
+                        iconColor: AppColors.primaryBlue,
                       ),
                       _buildProfileTile(
-                        icon: LucideIcons.award,
-                        title: 'Google Student Ambassador',
-                        subtitle: 'Applicant Selection Process',
-                        isLast: true,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // 4. SEKSI SERTIFIKASI & KEAHLIAN (Dicoding Paths)
-                _buildSectionTitle('Skills & Certifications'),
-                const SizedBox(height: 12),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      _buildProfileTile(
-                        icon: LucideIcons.code,
-                        title: 'Python Programming',
-                        subtitle: 'Dicoding Certification Milestone',
+                        icon: LucideIcons.databaseBackup,
+                        title: 'Backup Data',
+                        subtitle: 'Export and restore application data',
                         isLast: false,
+                        // textColor: Colors.blue.shade700,
+                        iconColor: AppColors.primaryBlue,
                       ),
                       _buildProfileTile(
-                        icon: LucideIcons.cpu,
-                        title: 'Basic AI & Machine Learning',
-                        subtitle: 'IDCamp Digital Scholarship',
-                        isLast: true,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // 5. SEKSI PENGATURAN UMUM APLIKASI
-                _buildSectionTitle('Application Settings'),
-                const SizedBox(height: 12),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      _buildProfileTile(
-                        icon: LucideIcons.sliders,
-                        title: 'Preferences',
-                        subtitle: 'App customization and themes',
+                        icon: LucideIcons.info,
+                        title: 'About App',
+                        subtitle: 'Version information and app details',
                         isLast: false,
+                        // textColor: Colors.purple.shade700,
+                        iconColor: AppColors.primaryBlue,
                       ),
                       _buildProfileTile(
                         icon: LucideIcons.logOut,
-                        title: 'Sign Out',
-                        subtitle: 'Log out from your current account',
+                        title: 'Logout',
+                        subtitle: 'Sign out from the application',
                         isLast: true,
                         textColor: Colors.red.shade700,
                         iconColor: Colors.red.shade700,
@@ -265,7 +222,7 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       title,
                       style: GoogleFonts.plusJakartaSans(
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: textColor ?? AppColors.textDark,
                       ),
@@ -275,7 +232,7 @@ class ProfileScreen extends StatelessWidget {
                       subtitle,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.textSecondary.withOpacity(0.7),
                       ),
                     ),

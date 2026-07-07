@@ -112,7 +112,7 @@ class ActivityItemCard extends StatelessWidget {
                             margin: EdgeInsets.only(left: 12),
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: AppColors.progressBackground,
+                              color: AppColors.iconBackground,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Icon(
@@ -160,7 +160,7 @@ class ActivityItemCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: AppColors.progressBackground,
+                              color: AppColors.iconBackground,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(

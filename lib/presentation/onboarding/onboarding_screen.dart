@@ -83,7 +83,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Kuasai tugas kuliahmu, kelola agenda non-akademik, dan biarkan priority engine mengatur harimu secara otomatis.',
+                  'Finish your assignments on time, manage non-academic activities, and confidently achieve your daily goals.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
@@ -98,7 +98,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 // INPUT FORM SECTION
                 // ==========================================
                 Text(
-                  'Siapa nama panggilannmu?',
+                  "What's your nickname?",
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -114,7 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     fontWeight: FontWeight.w500,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Masukkan namamu di sini...',
+                    hintText: 'Enter your name...',
                     hintStyle: GoogleFonts.plusJakartaSans(
                       color: AppColors.textSecondary.withValues(alpha: 0.6),
                       fontSize: 15,
@@ -145,10 +145,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Nama tidak boleh kosong, ya!';
+                      return 'Please enter your name!';
                     }
                     if (value.trim().length > 15) {
-                      return 'Nama panggilan maksimal 15 karakter.';
+                      return 'Maximum 15 characters.';
                     }
                     return null;
                   },
@@ -170,7 +170,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Mulai Sekarang',
+                    'Get Started',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
