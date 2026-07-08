@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const MainNavigation(),
+      home: const OnboardingScreen(),
     );
   }
 }

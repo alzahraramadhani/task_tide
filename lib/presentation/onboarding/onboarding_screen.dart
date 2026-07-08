@@ -12,13 +12,52 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerProviderStateMixin {
   final TextEditingController _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  // Variabel Pendukung Animasi
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // Inisialisasi Animation Controller dengan durasi organik (1100 milidetik)
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    );
+
+    // Animasi Fade In (Transparansi dari 0.0 ke 1.0) dengan Curve Mulus
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
+      ),
+    );
+
+    // Animasi Slide/Move Up (Bergeser dari bawah ke posisi idealnya)
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 0.2), // Mulai sedikit lebih rendah di bawah posisi asli
+      end: Offset.zero,             // Berakhir di posisi layout asli
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
+      ),
+    );
+
+    // Memicu animasi secara otomatis sesaat setelah halaman dimuat
+    _animationController.forward();
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _animationController.dispose(); // Memastikan controller dibersihkan dari memori
     super.dispose();
   }
 
@@ -42,143 +81,144 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background, // Konsisten dengan off-white background
+      backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Spacer(),
-                
-                // ==========================================
-                // BRANDING & LOGO SECTION
-                // ==========================================
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.progressBackground,
-                      shape: BoxShape.circle,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // =========================================================
+                  // BRANDING & LOGO SECTION (DIALIRKAN DALAM SATU BLOK ANIMASI)
+                  // =========================================================
+                  SlideTransition(
+                    position: _slideAnimation,
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Column(
+                        children: [
+                          // Memuat Logo PNG Kustom dengan ukuran proporsional & estetik
+                          Image.asset(
+                            'assets/images/logo_tasktide.png',
+                            width: 140,
+                            height: 140,
+                            fit: BoxFit.contain,
+                          ),
+                          const SizedBox(height: 15),
+                          Text(
+                            'TaskTide',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.primaryBlue,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Finish your assignments on time, manage non-academic activities, and confidently achieve your daily goals.',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.water_drop_rounded, // Visual representasi "Tide" (Ombak/Air)
-                      size: 64,
-                      color: AppColors.primaryBlue,
-                    ),
                   ),
-                ),
-                const SizedBox(height: 32),
-                Text(
-                  'TaskTide',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryBlue,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Finish your assignments on time, manage non-academic activities, and confidently achieve your daily goals.',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                    height: 1.5,
-                  ),
-                ),
-                
-                const Spacer(),
+                  const SizedBox(height: 80),
 
-                // ==========================================
-                // INPUT FORM SECTION
-                // ==========================================
-                Text(
-                  "What's your nickname?",
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textDark,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _nameController,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 16,
-                    color: AppColors.textDark,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Enter your name...',
-                    hintStyle: GoogleFonts.plusJakartaSans(
-                      color: AppColors.textSecondary.withValues(alpha: 0.6),
+                  // ==========================================
+                  // INPUT NICKNAME SECTION
+                  // ==========================================
+                  Text(
+                    "What's your nickname?",
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 15,
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(color: Colors.grey.shade200, width: 1),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(color: Colors.grey.shade200, width: 1),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: AppColors.primaryBlue, width: 2),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Colors.redAccent, width: 1),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textDark,
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your name!';
-                    }
-                    if (value.trim().length > 15) {
-                      return 'Maximum 15 characters.';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _nameController,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
+                      color: AppColors.textDark,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Enter your nickname...',
+                      hintStyle: GoogleFonts.plusJakartaSans(
+                        color: AppColors.textSecondary.withOpacity(0.5),
+                        fontSize: 14,
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: AppColors.primaryBlue, width: 2),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your name!';
+                      }
+                      if (value.trim().length > 15) {
+                        return 'Maximum 15 characters.';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
 
-                // ==========================================
-                // BUTTON ACTION
-                // ==========================================
-                ElevatedButton(
-                  onPressed: _handleGetStarted,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryBlue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                  // ==========================================
+                  // BUTTON ACTION
+                  // ==========================================
+                  ElevatedButton(
+                    onPressed: _handleGetStarted,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryBlue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 0,
-                  ),
-                  child: Text(
-                    'Get Started',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    ),
+                    child: Text(
+                      'Get Started',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-              ],
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
           ),
         ),
