@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:task_tide/presentation/onboarding/onboarding_screen.dart';
 import 'package:task_tide/providers/app_state_provider.dart';
 import '../../core/constants/colors.dart';
 
@@ -69,7 +70,7 @@ class ProfileScreen extends StatelessWidget {
                         return Text(
                           '$username',
                           style: GoogleFonts.plusJakartaSans(
-                            fontSize: 18,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textDark,
                           ),
@@ -92,10 +93,18 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 25),
 
                 // 3. SEKSI INFORMASI AKUN
-                _buildSectionTitle('Account Information'),
+                Text(
+                  "Account Information",
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDark,
+                  ),
+                ),
+
                 const SizedBox(height: 12),
                 Container(
                   decoration: BoxDecoration(
@@ -142,6 +151,51 @@ class ProfileScreen extends StatelessWidget {
                         isLast: true,
                         textColor: Colors.red.shade700,
                         iconColor: Colors.red.shade700,
+                        onTap: () async {
+                          // 1. Tampilkan Dialog Konfirmasi untuk kenyamanan pengguna (UX)
+                          bool confirmReset = await showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text(
+                                    'Reset Profile?',
+                                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+                                  ),
+                                  content: Text(
+                                    'This action will permanently delete your data from local storage.',
+                                    style: GoogleFonts.plusJakartaSans(),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, false),
+                                      child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
+                                    ),
+                                    TextButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:  Colors.red.shade400,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                      ),
+                                      onPressed: () => Navigator.pop(context, true),
+                                      child: Text('Logout', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
+                                    ),
+                                  ],
+                                ),
+                              ) ?? false;
+
+                          // 2. Jika pengguna memilih "Ya, Keluar"
+                          if (confirmReset && context.mounted) {
+                            // Picu fungsi pembersihan SharedPreferences via AppStateProvider
+                            await context.read<AppStateProvider>().resetProfile();
+
+                            if (context.mounted) {
+                              // 3. Paksa navigasi balik ke OnboardingScreen & hapus seluruh tumpukan halaman terdahulu
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+                                (route) => false, // Stack memori dibersihkan total
+                              );
+                            }
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -154,17 +208,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Helper Widget untuk membangun Judul Seksi
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: GoogleFonts.plusJakartaSans(
-        fontSize: 15,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textDark,
-      ),
-    );
-  }
 
   // Helper Widget untuk membangun baris menu item profil (ListTile Kustom)
   Widget _buildProfileTile({
@@ -174,76 +217,82 @@ class ProfileScreen extends StatelessWidget {
     required bool isLast,
     Color? textColor,
     Color? iconColor,
+    VoidCallback? onTap,
   }) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
-          child: Row(
-            children: [
-              // Kotak Wadah Ikon Kiri
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: iconColor != null 
-                      ? iconColor.withOpacity(0.08) 
-                      : AppColors.progressBackground,
-                  borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      onTap: onTap, // 👈 Pasangkan callback di sini
+      splashColor: Colors.grey.shade100,
+      highlightColor: Colors.transparent,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+            child: Row(
+              children: [
+                // Kotak Wadah Ikon Kiri
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: iconColor != null 
+                        ? iconColor.withOpacity(0.08) 
+                        : AppColors.progressBackground,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: iconColor ?? AppColors.primaryBlue,
+                    size: 20,
+                  ),
                 ),
-                child: Icon(
-                  icon,
-                  color: iconColor ?? AppColors.primaryBlue,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 16),
-              
-              // Blok Teks Informasi Menu
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: textColor ?? AppColors.textDark,
+                const SizedBox(width: 16),
+                
+                // Blok Teks Informasi Menu
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: textColor ?? AppColors.textDark,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary.withOpacity(0.7),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textSecondary.withOpacity(0.7),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              
-              // Ikon Panah Navigasi Kanan (hanya tampil jika bukan menu aksi destruktif/logout)
-              if (textColor == null)
-                Icon(
-                  LucideIcons.chevronRight,
-                  size: 18,
-                  color: AppColors.textSecondary.withOpacity(0.4),
-                ),
-            ],
+                
+                // Ikon Panah Navigasi Kanan (hanya tampil jika bukan menu aksi destruktif/logout)
+                if (textColor == null)
+                  Icon(
+                    LucideIcons.chevronRight,
+                    size: 18,
+                    color: AppColors.textSecondary.withOpacity(0.4),
+                  ),
+              ],
+            ),
           ),
-        ),
-        // Garis pemisah tipis antar baris menu internal
-        if (!isLast)
-          Divider(
-            height: 1,
-            thickness: 1,
-            color: Colors.grey.shade100,
-            indent: 16,
-            endIndent: 16,
-          ),
-      ],
+          // Garis pemisah tipis antar baris menu internal
+          if (!isLast)
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: Colors.grey.shade100,
+              indent: 16,
+              endIndent: 16,
+            ),
+        ],
+      ),
     );
   }
 }

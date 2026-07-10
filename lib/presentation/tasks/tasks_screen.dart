@@ -48,17 +48,17 @@ class _TasksScreenState extends State<TasksScreen> {
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Hapus Kategori',
+          'Delete Category',
           style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
         ),
         content: Text(
-          'Apakah kamu yakin ingin menghapus kategori "$categoryName"? Kategori hanya bisa dihapus jika tidak memiliki tugas aktif.',
+          'Are you sure you want to delete the category "$categoryName"? A category can only be deleted if it has no active tasks.',
           style: GoogleFonts.plusJakartaSans(fontSize: 14, color: AppColors.textDark),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
+            child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -77,7 +77,7 @@ class _TasksScreenState extends State<TasksScreen> {
                   setState(() => _selectedCategoryId = null);
                   await taskProvider.fetchTasks();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Kategori "$categoryName" berhasil dihapus.')),
+                    SnackBar(content: Text('Category "$categoryName" deleted successfully.')),
                   );
                 } else {
                   // Jika gagal karena ada tugas aktif terikat
@@ -85,15 +85,15 @@ class _TasksScreenState extends State<TasksScreen> {
                     context: context,
                     builder: (errContext) => AlertDialog(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      title: Text('Gagal Menghapus', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: Colors.red.shade700)),
+                      title: Text('Failed to Delete', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: Colors.red.shade700)),
                       content: Text(
-                        'Kategori tidak bisa dihapus karena masih terdapat tugas kuliah aktif di dalamnya.',
+                        'Category cannot be deleted because it still contains active tasks.',
                         style: GoogleFonts.plusJakartaSans(fontSize: 14),
                       ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(errContext),
-                          child: Text('Mengerti', style: GoogleFonts.plusJakartaSans(color: AppColors.primaryBlue)),
+                          child: Text('Understood', style: GoogleFonts.plusJakartaSans(color: AppColors.primaryBlue)),
                         )
                       ],
                     ),
@@ -101,7 +101,7 @@ class _TasksScreenState extends State<TasksScreen> {
                 }
               }
             },
-            child: Text('Hapus', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: Text('Delete', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -284,12 +284,12 @@ class _TasksScreenState extends State<TasksScreen> {
                               context: context,
                               builder: (dialogContext) => AlertDialog(
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                title: Text('Hapus Tugas', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-                                content: Text('Apakah kamu yakin ingin menghapus tugas "${task.title}"?'),
+                                title: Text('Delete Task', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+                                content: Text('Are you sure you want to delete the task "${task.title}"?'),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(dialogContext, false),
-                                    child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
+                                    child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
                                   ),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -297,7 +297,7 @@ class _TasksScreenState extends State<TasksScreen> {
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                     ),
                                     onPressed: () => Navigator.pop(dialogContext, true),
-                                    child: Text('Hapus', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
+                                    child: Text('Delete', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
                                   ),
                                 ],
                               ),

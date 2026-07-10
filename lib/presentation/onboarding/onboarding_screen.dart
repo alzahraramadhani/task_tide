@@ -62,21 +62,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
   }
 
   void _handleGetStarted() async {
-    if (_formKey.currentState!.validate()) {
-      final appState = context.read<AppStateProvider>();
-      
-      // Simpan nama pengguna dan ubah status onboarding via AppStateProvider
-      await appState.completeOnboarding(_nameController.text.trim());
+  // 1. Validasi teks input (FormState) terlebih dahulu
+  if (_formKey.currentState!.validate()) {
+    final appState = context.read<AppStateProvider>();
+    
+    // 2. SEBELUM berpindah halaman, tulis data baru ke Penyimpanan Lokal secara asinkronus (await)
+    await appState.completeOnboarding(_nameController.text.trim());
 
-      if (mounted) {
-        // Pindah ke halaman Navigasi Utama dan hapus stack halaman onboarding
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainNavigation()),
-        );
-      }
+    if (mounted) {
+      // 3. Setelah proses menulis selesai, lakukan navigasi pengganti (replacement) ke Navigasi Utama
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainNavigation()),
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

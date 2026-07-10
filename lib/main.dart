@@ -8,18 +8,22 @@ import 'package:task_tide/providers/app_state_provider.dart';
 import 'package:task_tide/providers/category_provider.dart';
 import 'package:task_tide/providers/task_provider.dart';
 
-// 2. Ubah fungsi main menjadi async
 void main() async {
-  // 3. Pastikan binding Flutter sudah diinisialisasi sebelum menjalankan fungsi async lain
+  // 1. Pastikan binding Flutter sudah diinisialisasi
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 4. Inisialisasi data lokal untuk format bahasa Indonesia ('id')
+  // 2. Inisialisasi data lokal untuk format bahasa Indonesia ('id')
   await initializeDateFormatting('id', null);
+
+  // 3. Buat instance AppStateProvider dan baca SharedPreferences SEBELUM runApp
+  final appStateProvider = AppStateProvider();
+  await appStateProvider.checkOnboardingStatus();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AppStateProvider()),
+        // Menggunakan .value karena instance appStateProvider sudah dibuat dan di-load di atas
+        ChangeNotifierProvider.value(value: appStateProvider),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => TaskProvider()),
         ChangeNotifierProvider(create: (_) => ActivityProvider()),
@@ -34,13 +38,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 4. Baca status isFirstTimeUser langsung dari provider yang sudah siap data-nya
+    final isFirstTime = context.read<AppStateProvider>().isFirstTimeUser;
+
     return MaterialApp(
       title: 'TaskTide',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const OnboardingScreen(),
+      // Kondisi A & B: Tentukan halaman utama secara dinamis berdasarkan data penyimpanan lokal
+      home: isFirstTime ? const OnboardingScreen() : const MainNavigation(),
     );
   }
 }
