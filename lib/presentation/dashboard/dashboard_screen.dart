@@ -122,13 +122,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       // Item 1: Tombol Navigasi profil
                       PopupMenuItem<int>(
                         value: 1,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context); // Tutup menu pop up
-                            if (widget.onProfileTap != null) {
-                              widget.onProfileTap!(); // 👈 Panggil callback ini
-                            }
-                          },
+                        // FIX 1: Pindahkan logika navigasi ke onTap bawaan PopupMenuItem agar seluruh area responsif
+                        onTap: () {
+                        if (widget.onProfileTap != null) {
+                            // Beri sedikit delay agar animasi pop up menutup selesai terlebih dahulu dengan mulus
+                            Future.delayed(
+                              const Duration(milliseconds: 100),
+                              () => widget.onProfileTap!(),
+                            );
+                          }
+                        },
                           child: Row(
                             children: [
                               const Icon(LucideIcons.user, size: 19, color: AppColors.primaryBlue),
@@ -144,18 +147,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ],
                           ),
                         ),
-                      ),
+                    
 
                       const PopupMenuDivider(height: 1),
 
                       // Item 2: Tombol Logout
                       PopupMenuItem<int>(
                         value: 2,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context); // Tutup menu sebelum menampilkan dialog
-                            _showLogoutDialog(context);
-                          },
+                        // FIX 2: Pindahkan juga logika logout ke onTap bawaan PopupMenuItem
+                        onTap: () {
+                          Future.delayed(
+                            const Duration(milliseconds: 100),
+                            () => _showLogoutDialog(context),
+                          );
+                        },
                           child: Row(
                             children: [
                               const Icon(LucideIcons.logOut, size: 18, color: Colors.redAccent),
@@ -171,7 +176,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ],
                           ),
                         ),
-                      ),
+          
                     ],
                     
                     // Pemicu Klik: Menggunakan asset UI CircleAvatar asli dari rancangan awal Anda
