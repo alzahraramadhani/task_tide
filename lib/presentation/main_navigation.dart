@@ -19,14 +19,6 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
-  // Mengganti placeholder statis dengan Halaman Asli sesuai Struktur Folder Project
-  final List<Widget> _screens = [
-    const DashboardScreen(),
-    const TasksScreen(),
-    const ActivitiesScreen(),
-    const ProfileScreen(),
-  ];
-
   // Menampilkan Bottom Sheet Pilihan Tambah Data saat FAB ditekan
   void _showAddOptionsBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -157,10 +149,24 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+
+    final List<Widget> screens = [
+    DashboardScreen(
+      onProfileTap: () {
+        setState(() {
+          _currentIndex = 3; // 👈 Pindahkan indeks ke halaman Profile (indeks 3)
+        });
+      },
+    ),
+    const TasksScreen(),
+    const ActivitiesScreen(),
+    const ProfileScreen(),
+  ];
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screens,
+        children: screens,
       ),
       // FAB Utama di posisi tengah bawah
       floatingActionButton: FloatingActionButton(

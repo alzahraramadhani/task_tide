@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:task_tide/core/constants/colors.dart';
+import 'package:task_tide/presentation/onboarding/onboarding_screen.dart';
+import 'package:task_tide/presentation/profile/profile_screen.dart';
 import '../../../providers/task_provider.dart';
 import '../../../providers/activity_provider.dart';
 import '../../../providers/category_provider.dart'; 
@@ -13,7 +15,9 @@ import 'widgets/todays_focus_card.dart';
 import 'widgets/task_overview_grid.dart'; // Pastikan path ini sesuai dengan struktur proyek Anda
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final VoidCallback? onProfileTap;
+
+  const DashboardScreen({super.key, this.onProfileTap});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -32,8 +36,57 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  // logika logout dan reset profile
+  Future<void> _showLogoutDialog(BuildContext context) async {
+    bool confirmReset = await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(
+              'Reset Profile?', 
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)
+            ),
+            content: Text(
+              'This action will permanently delete your data from local storage.', 
+              style: GoogleFonts.plusJakartaSans()
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(
+                  'Cancel', 
+                  style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)
+                ),
+              ),
+              TextButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red.shade400,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(
+                  'Logout', 
+                  style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)
+                ),
+              ),
+            ],
+          ),
+        ) ?? false;
+
+    if (confirmReset && context.mounted) {
+      await context.read<AppStateProvider>().resetProfile();
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+          (route) => false,
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -44,14 +97,92 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               // 1. HEADER SECTION (Struktur Urutan Codingan 1 + Nama Dinamis)
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const CircleAvatar(
-                    radius: 22,
-                    backgroundColor: AppColors.iconBackground,
-                    child: Icon(Icons.person, color: Color.fromARGB(255, 87, 94, 107)),
-                  ),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                
+                // Pembungkus avatar menjadi menu melayang kecil yang rapi
+                  PopupMenuButton<int>(
+                    tooltip: 'Menu Profil',
+                    padding: EdgeInsets.zero, // FIX: Menghilangkan padding bawaan agar posisi avatar tidak bergeser
+                    offset: const Offset(0, 52), // Jarak memicu kemunculan tepat di bawah avatar
+                    color: Colors.white,
+                    elevation: 4,
+                    shadowColor: Colors.black.withValues(alpha: 0.15), // FIX: Menggunakan syntax dengan nilai alpha terbaru
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16), // Membuat sudut kotak melayang melengkung halus
+                    ),
+                    onSelected: (value) {
+                      // Eksekusi aksi jika opsi menu dipilih
+                      if (value == 1) {
+                        // Contoh: Pindah ke halaman profil atau trigger aksi lainnya
+                      }
+                    },
+                    itemBuilder: (context) => [
                     
+                      // Item 1: Tombol Navigasi profil
+                      PopupMenuItem<int>(
+                        value: 1,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context); // Tutup menu pop up
+                            if (widget.onProfileTap != null) {
+                              widget.onProfileTap!(); // 👈 Panggil callback ini
+                            }
+                          },
+                          child: Row(
+                            children: [
+                              const Icon(LucideIcons.user, size: 19, color: AppColors.primaryBlue),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Profile',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textDark,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const PopupMenuDivider(height: 1),
+
+                      // Item 2: Tombol Logout
+                      PopupMenuItem<int>(
+                        value: 2,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context); // Tutup menu sebelum menampilkan dialog
+                            _showLogoutDialog(context);
+                          },
+                          child: Row(
+                            children: [
+                              const Icon(LucideIcons.logOut, size: 18, color: Colors.redAccent),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Logout',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                    
+                    // Pemicu Klik: Menggunakan asset UI CircleAvatar asli dari rancangan awal Anda
+                    child: const CircleAvatar(
+                      radius: 22,
+                      backgroundColor: AppColors.iconBackground,
+                      child: Icon(Icons.person, color: Color.fromARGB(255, 87, 94, 107)),
+                    ),
+                  ),
+                  
+                  // Judul Aplikasi: Tetap terkunci aman tepat di posisi tengah layar
                   Text(
                     'TaskTide',
                     style: GoogleFonts.plusJakartaSans(
@@ -60,13 +191,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       color: AppColors.primaryBlue,
                     ),
                   ),
+                  
+                  // Penyeimbang porsi row kanan agar sumbu 'TaskTide' mutlak sentral (44 didapat dari diameter avatar)
                   const SizedBox(width: 44),
                 ],
               ),
               const SizedBox(height: 24),
               Consumer<AppStateProvider>(
                 builder: (context, appStateProvider, child) {
-                  final username = appStateProvider.username ?? 'Zahra';
+                  final username = appStateProvider.username;
                   return Text(
                     'Halo, $username 👋',
                     style: GoogleFonts.plusJakartaSans(
