@@ -124,4 +124,16 @@ class TaskProvider with ChangeNotifier {
     );
     await fetchTasks(); // Refresh daftar tugas untuk sinkronisasi otomatis
   }
+
+  // 6. Perbarui Tugas (Update Task)
+  Future<void> updateTask(TaskModel task) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      'tasks',
+      task.toMap(),
+      where: 'id = ?',
+      whereArgs: [task.id],
+    );
+    await fetchTasks(); // Refresh daftar agar UI otomatis terupdate
+  }
 }

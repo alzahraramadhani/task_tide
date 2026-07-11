@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:task_tide/core/constants/colors.dart';
 import 'package:task_tide/data/models/task_model.dart';
 import 'package:task_tide/data/models/category_model.dart';
+import 'package:task_tide/presentation/tasks/widgets/task_detail_sheet.dart';
 
 class TodaysFocusCard extends StatelessWidget {
   final TaskModel task;
@@ -111,133 +112,139 @@ class TodaysFocusCard extends StatelessWidget {
       difficultyText = const Color(0xFF2E7D32);
     }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 5,
-            spreadRadius: 0,
-            offset: const Offset(0, 4),
-          )
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: IntrinsicHeight(
-          child: Row(
-            children: [
-              // Garis dekorasi vertikal di ujung kiri kartu beranda
-              Container(
-                width: 6,
-                // color: accentColor.withOpacity(0.4),
-              ),
-              const SizedBox(width: 12),
-
-              // Tombol Checkbox Lingkaran Interaktif
-              GestureDetector(
-                  onTap: onToggle,
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: Colors.white, // Bagian dalam tetap putih bersih
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: task.isCompleted ? Colors.grey.shade400 : accentColor, // Outline warna aksen
-                        width: 2, // Garis outline tebal
-                      ),
-                    ),
-                    child: task.isCompleted
-                        ? Icon(
-                            LucideIcons.check,
-                            size: 14,
-                            color: Colors.grey.shade600,
-                          )
-                        : null,
-                  ),
+    return GestureDetector(
+      onTap: () {
+        // Panggil fungsi pop-up di sini
+        showTaskDetailBottomSheet(context, task, category);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 15),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 5,
+              spreadRadius: 0,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: IntrinsicHeight(
+            child: Row(
+              children: [
+                // Garis dekorasi vertikal di ujung kiri kartu beranda
+                Container(
+                  width: 6,
+                  // color: accentColor.withOpacity(0.4),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 12),
 
-              // Konten Teks Tugas Utama
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 16.0, bottom: 16.0, right: 16.0, left: 5.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Baris Kategori Dinamis dengan Titik Bulat Penanda
-                      Row(
-                        children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: accentColor,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            category?.name ?? 'Umum',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-
-                      // Judul Tugas Kuliah
-                      Text(
-                        task.title,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: task.isCompleted ? AppColors.textSecondary : AppColors.textDark,
-                          decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                // Tombol Checkbox Lingkaran Interaktif
+                GestureDetector(
+                    onTap: onToggle,
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: Colors.white, // Bagian dalam tetap putih bersih
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: task.isCompleted ? Colors.grey.shade400 : accentColor, // Outline warna aksen
+                          width: 2, // Garis outline tebal
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      child: task.isCompleted
+                          ? Icon(
+                              LucideIcons.check,
+                              size: 14,
+                              color: Colors.grey.shade600,
+                            )
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
 
-                      // Informasi Batas Waktu murni LucideIcons
-                      _buildDueDateWidget(accentColor),
+                // Konten Teks Tugas Utama
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16.0, bottom: 16.0, right: 16.0, left: 5.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Baris Kategori Dinamis dengan Titik Bulat Penanda
+                        Row(
+                          children: [
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: accentColor,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              category?.name ?? 'Umum',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+
+                        // Judul Tugas Kuliah
+                        Text(
+                          task.title,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: task.isCompleted ? AppColors.textSecondary : AppColors.textDark,
+                            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+
+                        // Informasi Batas Waktu murni LucideIcons
+                        _buildDueDateWidget(accentColor),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Badge Bobot Kesulitan di Pojok Kanan Atas
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0, right: 16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: task.isCompleted ? Colors.grey.shade300 : difficultyBg,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          task.priorityLevel,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: task.isCompleted ? Colors.grey.shade600 : difficultyText,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              ),
-
-              // Badge Bobot Kesulitan di Pojok Kanan Atas
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0, right: 16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: task.isCompleted ? Colors.grey.shade300 : difficultyBg,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        task.priorityLevel,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: task.isCompleted ? Colors.grey.shade600 : difficultyText,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -257,32 +257,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       );
 
                       return Dismissible(
-                        key: Key('focus_${task.id}'),
-                        direction: DismissDirection.endToStart,
-                        confirmDismiss: (direction) async {
-                          return await showDialog<bool>(
-                            context: context,
-                            builder: (dialogContext) => AlertDialog(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              title: Text('Delete Task', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-                              content: Text('Are you sure you want to delete the task "${task.title}"?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(dialogContext, false),
-                                  child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
+                          key: Key('task_${task.id}'),
+                          direction: DismissDirection.endToStart,
+                          confirmDismiss: (direction) async {
+                            // Dialog Konfirmasi sebelum benar-benar menghapus data dari SQLite
+                            return await showDialog<bool>(
+                              context: context,
+                              builder: (dialogContext) => AlertDialog(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                title: Text(
+                                  'Delete Task?', 
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.bold, 
+                                    color: AppColors.textDark
+                                  )
                                 ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red.shade400,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                content: Text(
+                                  'Are you sure you want to delete this task? This action cannot be undone.',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: AppColors.textSecondary,
                                   ),
-                                  onPressed: () => Navigator.pop(dialogContext, true),
-                                  child: Text('Delete', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
                                 ),
-                              ],
-                            ),
-                          );
-                        },
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(dialogContext, false),
+                                    child: Text(
+                                      'Cancel',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        color: AppColors.textSecondary,
+                                        // fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red.shade400,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    ),
+                                    onPressed: () => Navigator.pop(dialogContext, true),
+                                    child: Text('Delete', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         onDismissed: (direction) async {
                           await taskProvider.deleteTask(task.id!);
                           if (context.mounted) {

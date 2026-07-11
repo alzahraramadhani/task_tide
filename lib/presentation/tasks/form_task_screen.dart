@@ -11,7 +11,9 @@ import '../../providers/category_provider.dart';
 import 'widgets/inline_category_dialog.dart';
 
 class FormTaskScreen extends StatefulWidget {
-  const FormTaskScreen({super.key});
+  final TaskModel? task; 
+
+  const FormTaskScreen({super.key, this.task});
 
   @override
   State<FormTaskScreen> createState() => _FormTaskScreenState();
@@ -26,9 +28,20 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
   String _selectedDifficulty = 'Medium'; // Default tingkat kesulitan
   DateTime? _selectedDateTime;
 
+  bool get _isEditing => widget.task != null;
+
   @override
   void initState() {
     super.initState();
+
+    if (_isEditing) {
+      _titleController.text = widget.task!.title;
+      _notesController.text = widget.task!.notes ?? '';
+      _selectedCategoryId = widget.task!.categoryId;
+      _selectedDifficulty = widget.task!.priorityLevel;
+      _selectedDateTime = widget.task!.deadline;
+    }
+
     // Memastikan data kategori terbaru dimuat dari SQLite saat form dibuka
     Future.delayed(Duration.zero, () {
       context.read<CategoryProvider>().fetchCategories();
@@ -220,21 +233,17 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        title: Text(
+          _isEditing ? 'Edit Task' : 'New Task',
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: AppColors.textDark, fontSize: 18),
+        ),
+        centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Add Task',
-          style: GoogleFonts.plusJakartaSans(
-            color: AppColors.textDark,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -442,7 +451,42 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                 // TOMBOL SAVE TUGAS
                 // ==========================================
                 ElevatedButton(
-                  onPressed: _saveTask,
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      if (_selectedCategoryId == null || _selectedDateTime == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please fill all required fields!')),
+                        );
+                        return;
+                      }
+
+                      // Buat object TaskModel baru / update
+                      final taskData = TaskModel(
+                        id: widget.task?.id, // Kirim ID lama jika Edit, null jika Tambah
+                        title: _titleController.text,
+                        categoryId: _selectedCategoryId!,
+                        priorityLevel: _selectedDifficulty,
+                        deadline: _selectedDateTime!,
+                        notes: _notesController.text.isEmpty ? null : _notesController.text,
+                        isCompleted: widget.task?.isCompleted ?? false, // Pertahankan status ceklis
+                      );
+
+                      final taskProvider = context.read<TaskProvider>();
+
+                      if (_isEditing) {
+                        // Jalankan fungsi update jika mode edit
+                        await taskProvider.updateTask(taskData);
+                      } else {
+                        // Jalankan fungsi add jika mode tambah
+                        await taskProvider.addTask(taskData);
+                      }
+
+                      if (mounted) {
+                        Navigator.pop(context); // Kembali setelah berhasil menyimpan
+                      }
+                    }
+                  },
+                  
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
                     foregroundColor: Colors.white,
@@ -451,7 +495,7 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Save Task',
+                    _isEditing ? 'Update Task' : 'Save Task',
                     style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),

@@ -284,12 +284,29 @@ class _TasksScreenState extends State<TasksScreen> {
                               context: context,
                               builder: (dialogContext) => AlertDialog(
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                title: Text('Delete Task', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-                                content: Text('Are you sure you want to delete the task "${task.title}"?'),
+                                title: Text(
+                                  'Delete Task?', 
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.bold, 
+                                    color: AppColors.textDark
+                                  )
+                                ),
+                                content: Text(
+                                  'Are you sure you want to delete this task? This action cannot be undone.',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(dialogContext, false),
-                                    child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
+                                    child: Text(
+                                      'Cancel',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        color: AppColors.textSecondary,
+                                        // fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
