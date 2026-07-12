@@ -9,7 +9,9 @@ import '../../providers/activity_provider.dart';
 import 'widgets/inline_type_dialog.dart';
 
 class FormActivityScreen extends StatefulWidget {
-  const FormActivityScreen({super.key});
+  final ActivityModel? activity;
+
+  const FormActivityScreen({super.key, this.activity});
 
   @override
   State<FormActivityScreen> createState() => _FormActivityScreenState();
@@ -23,9 +25,19 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
   int? _selectedTypeId;
   DateTime? _selectedDate;
 
+  bool get _isEditing => widget.activity != null;
+
   @override
   void initState() {
     super.initState();
+
+    if (_isEditing) {
+      _nameController.text = widget.activity!.name;
+      _notesController.text = widget.activity!.notes ?? '';
+      _selectedTypeId = widget.activity!.activityTypeId;
+      _selectedDate = widget.activity!.activityDate;
+    }
+
     // Memastikan data tipe aktivitas termuat langsung dari SQLite saat form dibuka
     Future.delayed(Duration.zero, () {
       context.read<ActivityProvider>().fetchActivityTypes();
@@ -124,7 +136,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'New Activity',
+          _isEditing ? 'Edit Activity' : 'New Activity',      
           style: GoogleFonts.plusJakartaSans(
             color: AppColors.textDark,
             fontWeight: FontWeight.bold,
@@ -161,7 +173,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                   decoration: _buildInputDecoration('Example: UI/UX Workshop'),
-                  validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a name for the activity' : null,
+                  validator: (value) => value == null || value.trim().isEmpty ? 'Activity name is required' : null,
                 ),
                 const SizedBox(height: 10),
 
@@ -202,9 +214,9 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                       child: Text(
                         type.name,
                         style: GoogleFonts.plusJakartaSans(
-                          fontSize: 14,
+                          fontSize: 15,
                           color: AppColors.textSecondary,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     );
@@ -290,7 +302,40 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                 // ACTION BUTTON SIMPAN
                 // ==========================================
                 ElevatedButton(
-                  onPressed: _saveActivity,
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      if (_selectedTypeId == null || _selectedDate == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please fill all required fields!')),
+                        );
+                        return;
+                      }
+
+                      // Susun objek ActivityModel
+                      final activityData = ActivityModel(
+                        id: widget.activity?.id, // Bernilai ID lama jika Edit, null jika Tambah
+                        name: _nameController.text,
+                        activityTypeId: _selectedTypeId!,
+                        activityDate: _selectedDate!,
+                        notes: _notesController.text.isEmpty ? null : _notesController.text,
+                        isCompleted: widget.activity?.isCompleted ?? false, // Pertahankan status checklist sebelumnya
+                      );
+
+                      final activityProvider = context.read<ActivityProvider>();
+
+                      if (_isEditing) {
+                        // Jika mode edit, jalankan update
+                        await activityProvider.updateActivity(activityData);
+                      } else {
+                        // Jika mode tambah, jalankan insert/add
+                        await activityProvider.addActivity(activityData);
+                      }
+
+                      if (mounted) {
+                        Navigator.pop(context); // Kembali ke halaman sebelumnya setelah berhasil menyimpan
+                      }
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
                     foregroundColor: Colors.white,
@@ -299,7 +344,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Save Activity',
+                    _isEditing ? 'Update Activity' : 'Save Activity',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

@@ -76,4 +76,16 @@ class ActivityProvider with ChangeNotifier {
     await db.delete('activities', where: 'id = ?', whereArgs: [activityId]);
     await fetchActivities();
   }
+
+  // 7. Update Aktivitas (Misalnya untuk mengubah nama, tanggal, atau tipe)
+  Future<void> updateActivity(ActivityModel activity) async {
+  final db = await DatabaseHelper.instance.database;
+  await db.update(
+    'activities',
+    activity.toMap(),
+    where: 'id = ?',
+    whereArgs: [activity.id],
+  );
+  await fetchActivities(); // Refresh daftar aktivitas agar UI otomatis terupdate
+}
 }
