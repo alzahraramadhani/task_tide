@@ -23,6 +23,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     super.initState();
     // Proteksi inisialisasi state reaktif masa awal prapemuatan SQLite
     Future.delayed(Duration.zero, () {
+      if (!mounted) return;
       context.read<ActivityProvider>().fetchActivities();
       context.read<ActivityProvider>().fetchActivityTypes();
     });
@@ -72,7 +73,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   borderRadius: BorderRadius.circular(50),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
+                      color: Colors.black.withValues(alpha: 0.06),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                       spreadRadius: 0,
@@ -89,7 +90,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   decoration: InputDecoration(
                     hintText: 'Search Activity...',
                     hintStyle: GoogleFonts.plusJakartaSans(
-                      color: AppColors.textSecondary.withOpacity(0.5),
+                      color: AppColors.textSecondary.withValues(alpha: 0.5),
                       fontSize: 14,
                     ),
                     prefixIcon: const Icon(LucideIcons.search, size: 18, color: AppColors.textSecondary),
@@ -222,7 +223,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primaryBlue.withOpacity(0.2),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   )

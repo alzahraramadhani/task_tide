@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:task_tide/providers/activity_provider.dart';
 import '../../../core/constants/colors.dart';
 import '../../../data/models/activity_model.dart';
 import 'package:task_tide/presentation/activities/widgets/activity_detail_sheet.dart';
@@ -84,6 +81,18 @@ class ActivityItemCard extends StatelessWidget {
       child:Dismissible(
         key: Key('activity_${activity.id}'), // Menggunakan ID unik dari SQLite
         direction: DismissDirection.endToStart, // Geser dari kanan ke kiri untuk menghapus
+        confirmDismiss: (direction) async {
+          if (activity.id != null) {
+            // Panggil helper dialog yang mengembalikan nilai true/false
+            final bool? result = await showDeleteConfirmationDialog(context, activity.id!);
+            return result; 
+          }
+          return false;
+        },
+        
+        onDismissed: (direction) {
+          // Kode logika hapus cadangan atau snackbar Anda yang sudah ada di sini...
+        },
         background: Container(
           margin: const EdgeInsets.only(bottom: 16), // Sesuaikan dengan margin/jarak antar kartu Anda
           alignment: Alignment.centerRight,
@@ -92,30 +101,16 @@ class ActivityItemCard extends StatelessWidget {
             color: Colors.red.shade400, // Warna merah pastel yang bersih untuk indikasi hapus
             borderRadius: BorderRadius.circular(14), // Samakan dengan border radius kartu Anda
           ),
-          child: const Icon(
+            child: const Icon(
             LucideIcons.trash2,
             color: Colors.white,
             size: 24,
           ),
         ),
-        onDismissed: (direction) {
-          final activityName = activity.name;
 
-          // 4. Panggil fungsi hapus dari ActivityProvider secara asinkronus
-          context.read<ActivityProvider>().deleteActivity(activity.id!);
-
-          // 5. Berikan feedback berupa SnackBar mengambang yang rapi kepada pengguna
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Agenda "$activityName" berhasil dihapus'),
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 2),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-        },
+        child: InkWell(
+          onTap: () => showActivityDetailBottomSheet(context, activity),
+        
         child: Container(
           margin: const EdgeInsets.only(bottom: 14),
           decoration: BoxDecoration(
@@ -130,7 +125,7 @@ class ActivityItemCard extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -226,6 +221,7 @@ class ActivityItemCard extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

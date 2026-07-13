@@ -40,6 +40,7 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
 
     // Memastikan data tipe aktivitas termuat langsung dari SQLite saat form dibuka
     Future.delayed(Duration.zero, () {
+      if (!mounted) return;
       context.read<ActivityProvider>().fetchActivityTypes();
     });
   }
@@ -87,40 +88,6 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
     }
   }
 
-  void _saveActivity() async {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedTypeId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Select an activity type first!')),
-        );
-        return;
-      }
-      if (_selectedDate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Set the activity date!')),
-        );
-        return;
-      }
-
-      final activityProvider = context.read<ActivityProvider>();
-
-      final newActivity = ActivityModel(
-        activityTypeId: _selectedTypeId!,
-        name: _nameController.text.trim(),
-        notes: _notesController.text.trim(),
-        activityDate: _selectedDate!,
-      );
-
-      await activityProvider.addActivity(newActivity);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Activity added successfully!')),
-        );
-        Navigator.pop(context); // Kembali ke navigasi utama
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -311,6 +278,8 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                         return;
                       }
 
+                      final navigator = Navigator.of(context);
+
                       // Susun objek ActivityModel
                       final activityData = ActivityModel(
                         id: widget.activity?.id, // Bernilai ID lama jika Edit, null jika Tambah
@@ -331,9 +300,10 @@ class _FormActivityScreenState extends State<FormActivityScreen> {
                         await activityProvider.addActivity(activityData);
                       }
 
-                      if (mounted) {
-                        Navigator.pop(context); // Kembali ke halaman sebelumnya setelah berhasil menyimpan
-                      }
+                      // if (mounted) {
+                        
+                        navigator.pop(); // Kembali ke halaman sebelumnya setelah berhasil menyimpan
+                      // }  
                     }
                   },
                   style: ElevatedButton.styleFrom(

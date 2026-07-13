@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:task_tide/core/constants/colors.dart';
 import 'package:task_tide/presentation/onboarding/onboarding_screen.dart';
-import 'package:task_tide/presentation/profile/profile_screen.dart';
 import '../../../providers/task_provider.dart';
 import '../../../providers/activity_provider.dart';
 import '../../../providers/category_provider.dart'; 
@@ -29,6 +28,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
+      if (!mounted) return;
       context.read<TaskProvider>().fetchTasks();
       context.read<ActivityProvider>().fetchActivities();
       context.read<CategoryProvider>().fetchCategories(); 
@@ -37,7 +37,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   // logika logout dan reset profile
-  Future<void> _showLogoutDialog(BuildContext context) async {
+  Future<void> _showLogoutDialog() async {
     bool confirmReset = await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -72,15 +72,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ) ?? false;
 
-    if (confirmReset && context.mounted) {
-      await context.read<AppStateProvider>().resetProfile();
-      if (context.mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-          (route) => false,
-        );
-      }
+    if (!mounted) return;
+
+    if (confirmReset) {
+      // 2. Ambil provider & navigator SEBELUM await proses reset
+      final appStateProvider = context.read<AppStateProvider>();
+      final navigator = Navigator.of(context);
+
+      // Proses async hapus data
+      await appStateProvider.resetProfile();
+
+      // 3. Cek lagi kondisi mounted setelah proses async selesai
+      if (!mounted) return;
+
+      // Panggil navigator yang sudah dikunci dengan aman menuju onboarding
+      navigator.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+        (route) => false,
+      );
     }
   }
 
@@ -156,9 +165,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         value: 2,
                         // FIX 2: Pindahkan juga logika logout ke onTap bawaan PopupMenuItem
                         onTap: () {
+                          
                           Future.delayed(
                             const Duration(milliseconds: 100),
-                            () => _showLogoutDialog(context),
+                            
+                            () => _showLogoutDialog(),
                           );
                         },
                           child: Row(

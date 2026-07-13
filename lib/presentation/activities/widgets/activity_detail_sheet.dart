@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-
 import 'package:task_tide/core/constants/colors.dart';
 import 'package:task_tide/data/models/activity_model.dart';
 import 'package:task_tide/providers/activity_provider.dart';
@@ -185,7 +184,7 @@ void showActivityDetailBottomSheet(BuildContext context, ActivityModel activity)
                   // Tombol Delete
                   InkWell(
                     onTap: () {
-                      _showDeleteConfirmationDialog(context, activity.id!);
+                      showDeleteConfirmationDialog(context, activity.id!, isFromBottomSheet: true);
                     },
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
@@ -213,12 +212,12 @@ void showActivityDetailBottomSheet(BuildContext context, ActivityModel activity)
 }
 
 // Fungsi helper dialog konfirmasi hapus aktivitas
-void _showDeleteConfirmationDialog(BuildContext context, int activityId) {
-  showDialog(
+Future<bool?> showDeleteConfirmationDialog(BuildContext context, int activityId, {bool isFromBottomSheet = false}) {
+  return showDialog<bool>(
     context: context,
     builder: (BuildContext dialogContext) {
       return AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Delete Activity?',
           style: GoogleFonts.plusJakartaSans(
@@ -234,31 +233,34 @@ void _showDeleteConfirmationDialog(BuildContext context, int activityId) {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            // Mengembalikan nilai false jika batal agar Dismissible kembali ke posisi semula
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: Text(
               'Cancel',
               style: GoogleFonts.plusJakartaSans(
                 color: AppColors.textSecondary,
-                fontWeight: FontWeight.bold,
+                // fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          TextButton(
-            onPressed: () {
-              // 1. Eksekusi fungsi hapus dari ActivityProvider
-              Provider.of<ActivityProvider>(context, listen: false).deleteActivity(activityId);
-              // 2. Tutup AlertDialog
-              Navigator.pop(dialogContext);
-              // 3. Tutup BottomSheet
-              Navigator.pop(context);
-            },
-            child: Text(
-              'Delete',
-              style: GoogleFonts.plusJakartaSans(
-                color: Colors.red.shade400,
-                fontWeight: FontWeight.bold,
-              ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade400,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
+            onPressed: () {
+              // 1. Jalankan fungsi hapus data
+              Provider.of<ActivityProvider>(context, listen: false).deleteActivity(activityId);
+              
+              // 2. Tutup dialog dengan mengembalikan nilai true agar Dismissible bergeser hilang
+              Navigator.pop(dialogContext, true);
+              
+              // 3. Hanya tutup BottomSheet jika dipicu dari tombol hapus di dalam BottomSheet
+              if (isFromBottomSheet == true) {
+                Navigator.pop(context);
+              }
+            },
+            child: Text('Delete', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
           ),
         ],
       );

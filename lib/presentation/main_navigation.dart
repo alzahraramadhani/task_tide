@@ -124,7 +124,7 @@ class _MainNavigationState extends State<MainNavigation> {
                               const Icon(LucideIcons.calendarDays, color: Colors.orange, size: 28),
                               const SizedBox(height: 8),
                               Text(
-                                'New Agenda',
+                                'New Activity',
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,

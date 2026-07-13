@@ -81,7 +81,7 @@ class DatabaseHelper {
     ''');
 
     // DEBUG TRIGGER: Berikan log ke konsol saat berhasil dibuat
-    print("====== DATABASE TASKTIDE BERHASIL DIINISIALISASI ======");
+    // print("====== DATABASE TASKTIDE BERHASIL DIINISIALISASI ======");
   }
 
   Future close() async {

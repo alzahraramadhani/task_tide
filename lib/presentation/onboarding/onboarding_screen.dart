@@ -156,7 +156,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                     decoration: InputDecoration(
                       hintText: 'Enter your nickname...',
                       hintStyle: GoogleFonts.plusJakartaSans(
-                        color: AppColors.textSecondary.withOpacity(0.5),
+                        color: AppColors.textSecondary.withValues(alpha: 0.5),
                         fontSize: 14,
                       ),
                       fillColor: Colors.white,

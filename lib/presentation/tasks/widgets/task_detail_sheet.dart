@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-
 import 'package:task_tide/core/constants/colors.dart';
 import 'package:task_tide/data/models/task_model.dart';
 import 'package:task_tide/data/models/category_model.dart';
 import 'package:task_tide/presentation/tasks/form_task_screen.dart';
-import 'package:task_tide/providers/task_provider.dart'; 
 
 void showTaskDetailBottomSheet(BuildContext context, TaskModel task, CategoryModel? category) {
   // Helper untuk mendapatkan warna dari model kategori atau warna default

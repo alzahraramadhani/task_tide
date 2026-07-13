@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/constants/colors.dart';
 import '../../data/models/task_model.dart';
-import '../../data/models/category_model.dart';
 import '../../providers/task_provider.dart';
 import '../../providers/category_provider.dart';
 import 'widgets/inline_category_dialog.dart';
@@ -44,6 +43,7 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
 
     // Memastikan data kategori terbaru dimuat dari SQLite saat form dibuka
     Future.delayed(Duration.zero, () {
+      if (!mounted) return;
       context.read<CategoryProvider>().fetchCategories();
     });
   }
@@ -136,8 +136,9 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: () async {
-              Navigator.pop(dialogContext); // Tutup dialog konfirmasi utama
-              
+              Navigator.pop(dialogContext);
+              final navigator = Navigator.of(context); // Tutup dialog konfirmasi utama
+              final messenger = ScaffoldMessenger.of(context);
               final taskProvider = context.read<TaskProvider>();
               final categoryProvider = context.read<CategoryProvider>();
               
@@ -153,13 +154,13 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                     });
                   }
                   await taskProvider.fetchTasks(); // Sinkronisasi ulang state tugas
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  messenger.showSnackBar(
                     SnackBar(content: Text('Category "$categoryName" deleted successfully.')),
                   );
                 } else {
                   // Munculkan dialog peringatan jika terdapat relasi tugas aktif
                   showDialog(
-                    context: context,
+                    context: navigator.context,
                     builder: (errContext) => AlertDialog(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       title: Text(
@@ -186,44 +187,6 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
         ],
       ),
     );
-  }
-
-  void _saveTask() async {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedCategoryId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a task category first!')),
-        );
-        return;
-      }
-      if (_selectedDateTime == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please set the due date for the task!')),
-        );
-        return;
-      }
-
-      final taskProvider = context.read<TaskProvider>();
-      
-      final newTask = TaskModel(
-        categoryId: _selectedCategoryId!,
-        title: _titleController.text.trim(),
-        notes: _notesController.text.trim(),
-        priorityLevel: _selectedDifficulty,
-        deadline: _selectedDateTime!,
-        isCompleted: false, // Tugas baru berstatus aktif
-        priorityScore: 0.0, // Akan dihitung otomatis oleh priority engine di layer provider
-      );
-
-      await taskProvider.addTask(newTask);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('New task added successfully!')),
-        );
-        Navigator.pop(context); // Kembali ke halaman navigasi utama
-      }
-    }
   }
 
   @override
@@ -291,7 +254,7 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                 ),
                 const SizedBox(height: 4),
                 DropdownButtonFormField<int>(
-                  value: _selectedCategoryId, // Menggunakan parameter properti 'value' yang tepat untuk form dinamis
+                  initialValue: _selectedCategoryId, // Menggunakan parameter properti 'value' yang tepat untuk form dinamis
                   items: categoryProvider.categories.map((category) {
                     return DropdownMenuItem<int>(
                       value: category.id,
@@ -460,6 +423,8 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                         return;
                       }
 
+                      final navigator = Navigator.of(context);
+
                       // Buat object TaskModel baru / update
                       final taskData = TaskModel(
                         id: widget.task?.id, // Kirim ID lama jika Edit, null jika Tambah
@@ -480,10 +445,8 @@ class _FormTaskScreenState extends State<FormTaskScreen> {
                         // Jalankan fungsi add jika mode tambah
                         await taskProvider.addTask(taskData);
                       }
-
-                      if (mounted) {
-                        Navigator.pop(context); // Kembali setelah berhasil menyimpan
-                      }
+                      
+                      navigator.pop(); // Kembali ke halaman sebelumnya setelah berhasil menyimpan
                     }
                   },
                   

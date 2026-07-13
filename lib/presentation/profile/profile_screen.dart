@@ -5,6 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:task_tide/presentation/onboarding/onboarding_screen.dart';
 import 'package:task_tide/providers/app_state_provider.dart';
 import '../../core/constants/colors.dart';
+import 'package:task_tide/presentation/profile/notification_screen.dart';
+import 'package:task_tide/presentation/profile/backup_restore_screen.dart';
+import 'package:task_tide/presentation/profile/about_app_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -46,7 +49,7 @@ class ProfileScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
+                        color: Colors.black.withValues(alpha: 0.02),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -66,7 +69,7 @@ class ProfileScreen extends StatelessWidget {
                       // Nama Lengkap Pengguna
                       Consumer<AppStateProvider>(
                       builder: (context, appStateProvider, child) {
-                        final username = appStateProvider.username ?? 'Zahra';
+                        final username = appStateProvider.username;
                         return Text(
                           '$username',
                           style: GoogleFonts.plusJakartaSans(
@@ -112,7 +115,7 @@ class ProfileScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
+                        color: Colors.black.withValues(alpha: 0.02),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -127,6 +130,9 @@ class ProfileScreen extends StatelessWidget {
                         isLast: false,
                         // textColor: Colors.green.shade700,
                         iconColor: AppColors.primaryBlue,
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationScreen()));
+                        },
                       ),
                       _buildProfileTile(
                         icon: LucideIcons.databaseBackup,
@@ -135,6 +141,9 @@ class ProfileScreen extends StatelessWidget {
                         isLast: false,
                         // textColor: Colors.blue.shade700,
                         iconColor: AppColors.primaryBlue,
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const BackupRestoreScreen()));
+                        },
                       ),
                       _buildProfileTile(
                         icon: LucideIcons.info,
@@ -143,6 +152,9 @@ class ProfileScreen extends StatelessWidget {
                         isLast: false,
                         // textColor: Colors.purple.shade700,
                         iconColor: AppColors.primaryBlue,
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutAppScreen()));
+                        },
                       ),
                       _buildProfileTile(
                         icon: LucideIcons.logOut,
@@ -234,7 +246,7 @@ class ProfileScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: iconColor != null 
-                        ? iconColor.withOpacity(0.08) 
+                        ? iconColor.withValues(alpha: 0.08) 
                         : AppColors.progressBackground,
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -265,7 +277,7 @@ class ProfileScreen extends StatelessWidget {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary.withOpacity(0.7),
+                          color: AppColors.textSecondary.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -277,7 +289,7 @@ class ProfileScreen extends StatelessWidget {
                   Icon(
                     LucideIcons.chevronRight,
                     size: 18,
-                    color: AppColors.textSecondary.withOpacity(0.4),
+                    color: AppColors.textSecondary.withValues(alpha: 0.4),
                   ),
               ],
             ),

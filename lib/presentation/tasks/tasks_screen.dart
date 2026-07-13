@@ -24,6 +24,7 @@ class _TasksScreenState extends State<TasksScreen> {
     super.initState();
     // Inisialisasi data SQLite saat halaman pertama kali dibuka
     Future.delayed(Duration.zero, () {
+      if (!mounted) return;
       context.read<TaskProvider>().fetchTasks();
       context.read<CategoryProvider>().fetchCategories();
     });
@@ -39,73 +40,6 @@ class _TasksScreenState extends State<TasksScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  // Dialog Konfirmasi Hapus Kategori (Protektif)
-  void _showDeleteCategoryDialog(BuildContext context, int categoryId, String categoryName) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Delete Category',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          'Are you sure you want to delete the category "$categoryName"? A category can only be deleted if it has no active tasks.',
-          style: GoogleFonts.plusJakartaSans(fontSize: 14, color: AppColors.textDark),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor:  Colors.red.shade400,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              final taskProvider = context.read<TaskProvider>();
-              // Panggil fungsi proteksi bawaan dari CategoryProvider
-              final success = await context.read<CategoryProvider>().deleteCategory(categoryId);
-              
-              if (mounted) {
-                if (success) {
-                  // Jika sukses, kembalikan filter tab ke 'All' dan refresh tugas
-                  setState(() => _selectedCategoryId = null);
-                  await taskProvider.fetchTasks();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Category "$categoryName" deleted successfully.')),
-                  );
-                } else {
-                  // Jika gagal karena ada tugas aktif terikat
-                  showDialog(
-                    context: context,
-                    builder: (errContext) => AlertDialog(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      title: Text('Failed to Delete', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: Colors.red.shade700)),
-                      content: Text(
-                        'Category cannot be deleted because it still contains active tasks.',
-                        style: GoogleFonts.plusJakartaSans(fontSize: 14),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(errContext),
-                          child: Text('Understood', style: GoogleFonts.plusJakartaSans(color: AppColors.primaryBlue)),
-                        )
-                      ],
-                    ),
-                  );
-                }
-              }
-            },
-            child: Text('Delete', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -380,7 +314,7 @@ class _TasksScreenState extends State<TasksScreen> {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primaryBlue.withOpacity(0.2),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   )
